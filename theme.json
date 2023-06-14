@@ -1,0 +1,11 @@
+{
+  "primary": "#3D3D3D",
+  "neutral": "#FFF4E9",
+  "cta": "#EC9110",
+  "upload": "#4793FF",
+  "goodBookmark": "#0E5C15",
+  "details": "#616161",
+  "otherAssetColor": "#5747FF",
+  "shade1": "#B3B3B3",
+  "destructive": "#930707"
+}
