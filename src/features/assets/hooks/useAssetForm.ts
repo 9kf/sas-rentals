@@ -4,11 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAssetStore } from "../store";
 import { useNavigation } from "@react-navigation/native";
-import routes from "../../../utils/routes";
 import { NavigationScreensType } from "../../../utils/types";
-import { Platform } from "react-native";
-import firestore from "@react-native-firebase/firestore";
-import { DOCUMENTS } from "../../../utils/contstants";
+import { useStore2 } from "../../../features/assets/store2";
 
 const assetFormSchema = z.object({
   name: z.string().min(3, { message: "Field is required" }),
@@ -31,8 +28,6 @@ interface IUseAssetFormProps {
 }
 
 export default function useAssetForm(props?: IUseAssetFormProps) {
-  const assetsCollection = firestore().collection(DOCUMENTS.assets);
-
   const {
     control,
     handleSubmit,
@@ -41,6 +36,8 @@ export default function useAssetForm(props?: IUseAssetFormProps) {
   } = useForm<AssetFormSchemaType>({
     resolver: zodResolver(assetFormSchema),
   });
+
+  const { uploadAssetImage, addAsset: addAssetToStore } = useStore2();
 
   const { field: assetName } = useController({
     control,
@@ -80,18 +77,11 @@ export default function useAssetForm(props?: IUseAssetFormProps) {
 
   const navigation = useNavigation<NavigationScreensType>();
 
-  const addAssetToStore = useAssetStore((state) => state.addAsset);
-
   const addAsset: SubmitHandler<AssetFormSchemaType> = async (data) => {
-    // const response = addAssetToStore(data as Required<AssetFormSchemaType>);
-    // if (!response.isSuccess) {
-    //   return;
-    // }
-    // navigation.navigate("assets");
-
-    console.log("adding");
-    const doc = await assetsCollection.add(data);
-    console.log(doc);
+    uploadAssetImage(data.photo, async (imgPath) => {
+      const doc = await addAssetToStore({ ...data, photo: imgPath });
+      navigation.navigate("assets");
+    });
   };
 
   const onConditionSelect = (optionId: string) => {
@@ -103,10 +93,6 @@ export default function useAssetForm(props?: IUseAssetFormProps) {
   };
 
   const onSelectPhoto = (img: ImagePickerAsset) => {
-    const filename = img.uri.substring(img.uri.lastIndexOf("/") + 1);
-    const uploadUri =
-      Platform.OS === "ios" ? img.uri.replace("file://", "") : img.uri;
-
     setValue("photo", img.uri);
   };
 

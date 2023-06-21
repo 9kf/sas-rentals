@@ -32,6 +32,7 @@ export const ThemedContainerStyles = StyleService.create({
   twoColumnCol: {
     flexBasis: "48%",
     flexShrink: 0,
+    zIndex: 10,
   },
   cardContainer: {
     width: "100%",

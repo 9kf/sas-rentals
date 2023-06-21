@@ -1918,10 +1918,22 @@
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
+"@react-native-firebase/auth@^18.0.0":
+  version "18.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-18.0.0.tgz#b938f41410b2492a7298e72f2cc6e239a9c1e756"
+  integrity sha512-9FOsvNH/w5+Cr48nxuJ3Lb85vxFe2A45w37OMxzfZCnLYXJJBvlF1espy3SCMKzwA31RN9+D0jH7OavacKbpzw==
+  dependencies:
+    plist "^3.0.5"
+
 "@react-native-firebase/firestore@^18.0.0":
   version "18.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-18.0.0.tgz#00a48ead46718fa96722b927e1a12292e274f85c"
   integrity sha512-jGalEquLZGvn2iM1pGQsC0tFnUlA1mRt7hqYbrSSo8eVdcr05NhlNwNvBu2ShcVi1MCQvtsPmEQ8ppu3pt0srw==
+
+"@react-native-firebase/storage@^18.0.0":
+  version "18.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-18.0.0.tgz#ebaaa54a560aadece7a5025c17758dba0766c8d5"
+  integrity sha512-aJchEV1nHzECq5bNE9bA6sczJs0ox59IQoox9vnuzdfh+Aep3ezjQBVJckriQ7/W/pV28fs32XyRx3GLVSRq6w==
 
 "@react-native/assets@1.0.0":
   version "1.0.0"
