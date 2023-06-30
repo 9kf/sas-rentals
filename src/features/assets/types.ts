@@ -18,15 +18,31 @@ export interface IAssetStatus {
 export interface IAsset {
   name: string;
   description: string;
-  photo: string;
-  condition: IAssetCondition;
+  photo?: string;
+  condition?: IAssetCondition;
   status?: IAssetStatus;
   standardRate: number;
-  rateInterval: IAssetRateInterval;
+  rateInterval?: IAssetRateInterval;
   color?: string;
   lastRentalSchedule?: string | null;
   lastCustomer?: string | null;
   overallProfit?: Double;
   createdDate?: string;
   modifiedDate?: string;
+}
+
+export interface IAssetFirebaseResponse {
+  condition: string;
+  description: string;
+  name: string;
+  photoRef?: string;
+  photoUrl: string;
+  rateInterval: string;
+  standardRate: string;
+  status: string;
+  lastCustomer: string | null;
+  lastRentalSchedule: string | null;
+  overallProfit: number;
+  createdDate: string;
+  modifiedDate: string;
 }

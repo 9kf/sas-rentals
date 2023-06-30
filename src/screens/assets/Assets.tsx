@@ -2,11 +2,12 @@ import { FloatingActionButton } from "../../components";
 import routes from "../../utils/routes";
 import { FlatList, Text, View } from "react-native";
 import useTheme from "../../theme/useTheme";
-import { AssetCard, useAssetStore } from "../../features/assets";
+import { AssetCard } from "../../features/assets";
+import useAssetList from "../../features/assets/hooks/useAssetList";
 
 export default function Assets({ navigation }) {
   const { containerStyles, textStyles } = useTheme();
-  const assetList = useAssetStore((state) => state.assets);
+  const { assetList } = useAssetList();
 
   return (
     <View style={containerStyles.defaultPageStyle}>

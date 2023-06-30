@@ -61,6 +61,8 @@ export const RATE_INTERVAL_OPTIONS: IAssetRateInterval[] = [
   },
 ];
 
+export const IMAGE_PLACEHOLDER = "https://cdn2.thecatapi.com/images/6tv.jpg";
+
 export const DEFAULT_SUCCESS_MESSAGES = {
   ADD_SUCCESS: "Successfully added",
   DELETE_SUCCESS: "Successfully deleted",

@@ -1,5 +1,5 @@
 import { StyleService } from "@ui-kitten/components";
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 
 export const ThemedContainerStyles = StyleService.create({
   defaultPageStyle: {
@@ -50,6 +50,18 @@ export const ThemedContainerStyles = StyleService.create({
     padding: 12,
     borderRadius: 4,
   },
+  toastLayoutContainer: {
+    position: "absolute",
+    width: "100%",
+    paddingHorizontal: 32,
+    bottom: Dimensions.get("screen").height * 0.08,
+  },
+  toastContainer: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    elevation: 8,
+    padding: 12,
+  },
 });
 
 export const ThemedTextStyles = StyleService.create({
@@ -62,6 +74,12 @@ export const ThemedTextStyles = StyleService.create({
   fieldLabel: {
     fontWeight: "300",
     color: "primary",
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  fieldError: {
+    fontWeight: "300",
+    color: "red",
     fontSize: 12,
     lineHeight: 16,
   },
@@ -112,6 +130,18 @@ export const ThemedTextStyles = StyleService.create({
     fontWeight: "normal",
     lineHeight: 12,
     color: "primary",
+  },
+  toastTitle: {
+    fontWeight: "600",
+    fontSize: 16,
+    lineHeight: 16,
+    color: "white",
+  },
+  toastMessage: {
+    fontWeight: "normal",
+    fontSize: 10,
+    lineHeight: 10,
+    color: "white",
   },
 });
 
@@ -175,6 +205,12 @@ export const ThemedButtonStyles = StyleService.create({
   },
   cancel: {
     backgroundColor: "darkgray",
+    borderRadius: 8,
+    paddingVertical: 8,
+    height: 40,
+  },
+  disabled: {
+    backgroundColor: "lightgray",
     borderRadius: 8,
     paddingVertical: 8,
     height: 40,

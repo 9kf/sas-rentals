@@ -11,6 +11,8 @@ import { RootStackParamsList } from "../../utils/types";
 import { Modal } from "@ui-kitten/components";
 import { useModal } from "../../utils/hooks";
 import { useAssetDetails } from "../../features/assets";
+import { IMAGE_PLACEHOLDER } from "../../utils/contstants";
+import { useAssetStore } from "../../features/assets";
 
 export default function AssetDetails() {
   const { buttonStyles, containerStyles, textStyles } = useTheme();
@@ -20,16 +22,28 @@ export default function AssetDetails() {
     name,
     condition,
     description,
-    photo,
     rateInterval,
     standardRate,
     lastRentalSchedule,
     overallProfit,
+    id,
   } = route.params.assetDetails;
 
   const { isVisible, onBackdropPress, showModal, toggleModal } = useModal();
 
-  const { onDeleteAsset, navigateToEditAssetForm } = useAssetDetails();
+  const {
+    states: { assetDetails, isSubmitting },
+    functions: { onDeleteAsset, navigateToEditAssetForm },
+  } = useAssetDetails(id);
+
+  const { getAssetConditionById, getAssetRateIntervalById } = useAssetStore();
+
+  const assetRateInterval = getAssetRateIntervalById(
+    assetDetails?.rateInterval || rateInterval
+  );
+  const assetCondition = getAssetConditionById(
+    assetDetails?.condition || condition
+  );
 
   return (
     <View style={containerStyles.defaultPageStyle}>
@@ -39,7 +53,7 @@ export default function AssetDetails() {
             resizeMethod="scale"
             resizeMode="cover"
             source={{
-              uri: photo || "https://cdn2.thecatapi.com/images/6tv.jpg",
+              uri: assetDetails?.photoUrl || IMAGE_PLACEHOLDER,
               height: 100,
               width: 180,
             }}
@@ -47,12 +61,14 @@ export default function AssetDetails() {
         </View>
         <View style={styles.infoContainer}>
           <Text
+            numberOfLines={2}
+            ellipsizeMode="tail"
             style={{
               ...(textStyles.largeTitle as object),
               marginBottom: 6,
             }}
           >
-            {name}
+            {assetDetails?.name || name}
           </Text>
           <View
             style={{
@@ -66,7 +82,9 @@ export default function AssetDetails() {
                 ...(textStyles.cardFieldValue as object),
                 textTransform: "capitalize",
               }}
-            >{`${standardRate} / ${rateInterval.name}`}</Text>
+            >{`${assetDetails?.standardRate || standardRate} / ${
+              assetRateInterval?.name
+            }`}</Text>
           </View>
           <View
             style={{
@@ -81,7 +99,7 @@ export default function AssetDetails() {
                 textTransform: "capitalize",
               }}
             >
-              {condition.name}
+              {assetCondition?.name}
             </Text>
           </View>
         </View>
@@ -95,13 +113,13 @@ export default function AssetDetails() {
             marginTop: 6,
           }}
         >
-          {description}
+          {assetDetails?.description || description}
         </Text>
       </View>
 
       <View style={{ marginTop: 24 }}>
         <Text style={textStyles.cardFieldLabel}>Last Rental: </Text>
-        {!lastRentalSchedule && (
+        {!(assetDetails?.lastRentalSchedule || lastRentalSchedule) && (
           <Text
             style={{
               ...styles.detailValue,
@@ -121,14 +139,19 @@ export default function AssetDetails() {
             marginTop: 6,
           }}
         >
-          {`${overallProfit} Php`}
+          {`${assetDetails?.overallProfit || overallProfit} Php`}
         </Text>
       </View>
 
       <View style={{ flex: 1 }} />
 
       <TouchableNativeFeedback
-        onPress={() => navigateToEditAssetForm(route.params?.assetDetails)}
+        onPress={() =>
+          navigateToEditAssetForm(
+            ({ ...assetDetails, id: route.params?.assetDetails?.id } as any) ||
+              route.params?.assetDetails
+          )
+        }
       >
         <View
           style={{
@@ -161,23 +184,35 @@ export default function AssetDetails() {
           <View style={{ marginVertical: 6 }} />
           <Text
             style={textStyles.modalDescription}
-          >{`Do you really want to delete the asset ${name}?`}</Text>
+          >{`Do you really want to delete the asset ${
+            assetDetails?.name || name
+          }?`}</Text>
           <View style={{ marginVertical: 16 }} />
-          <TouchableNativeFeedback onPress={() => onDeleteAsset(name)}>
+          <TouchableNativeFeedback
+            onPress={() => onDeleteAsset(id)}
+            disabled={isSubmitting}
+          >
             <View
               style={{
                 ...(containerStyles.centerAll as object),
-                ...(buttonStyles.destructive as object),
+                ...(isSubmitting
+                  ? (buttonStyles.disabled as object)
+                  : (buttonStyles.destructive as object)),
               }}
             >
               <Text style={textStyles.buttonText}>Confirm</Text>
             </View>
           </TouchableNativeFeedback>
-          <TouchableNativeFeedback onPress={toggleModal}>
+          <TouchableNativeFeedback
+            onPress={toggleModal}
+            disabled={isSubmitting}
+          >
             <View
               style={{
                 ...(containerStyles.centerAll as object),
-                ...(buttonStyles.cancel as object),
+                ...(isSubmitting
+                  ? (buttonStyles.disabled as object)
+                  : (buttonStyles.cancel as object)),
                 marginTop: 8,
               }}
             >
@@ -196,12 +231,12 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flexBasis: "50%",
-    marginRight: 20,
     overflow: "hidden",
     flexShrink: 0,
   },
   infoContainer: {
-    flexGrow: 1,
+    flexBasis: "50%",
+    paddingLeft: 20,
     justifyContent: "center",
   },
   detailValue: {

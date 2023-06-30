@@ -1,25 +1,57 @@
 import { useNavigation } from "@react-navigation/native";
 import { NavigationScreensType } from "../../../utils/types";
-import { useModal } from "../../../utils/hooks";
+import { IAssetFirebaseResponse } from "../types";
+import { useEffect, useState } from "react";
 import { useAssetStore } from "../store";
-import { IAsset } from "../types";
+import { useToast } from "../../../components";
 
-export default function useAssetDetails() {
+export default function useAssetDetails(assetId: string) {
+  const showToast = useToast((state) => state.showToast);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [assetDetails, setAssetDetails] = useState<
+    undefined | (IAssetFirebaseResponse & { id: string })
+  >(undefined);
+
   const navigation = useNavigation<NavigationScreensType>();
+  const { assetDocument, deleteAsset } = useAssetStore();
 
-  const deleteAsset = useAssetStore((state) => state.deleteAsset);
+  useEffect(() => {
+    const subscriber = assetDocument.doc(assetId).onSnapshot((snapshot) => {
+      if (snapshot.exists) {
+        setAssetDetails(
+          snapshot.data() as IAssetFirebaseResponse & { id: string }
+        );
+      }
+    });
 
-  const onDeleteAsset = (assetName: string) => {
-    const response = deleteAsset(assetName);
+    return () => subscriber();
+  }, [assetId]);
 
-    if (!response.isSuccess) {
-      return;
-    }
-
-    navigation.navigate("assets");
+  const onDeleteAsset = async (documentId: string) => {
+    setIsSubmitting(true);
+    await deleteAsset(
+      documentId,
+      () => {
+        showToast({
+          title: "Success",
+          message: "Asset has been deleted.",
+          type: "success",
+        });
+        setIsSubmitting(false);
+        navigation.navigate("assets");
+      },
+      (error) => {
+        showToast({ title: "Error", message: error, type: "error" });
+        setIsSubmitting(false);
+      }
+    );
   };
 
-  const navigateToEditAssetForm = (asset: IAsset) => {
+  const navigateToEditAssetForm = (
+    asset: IAssetFirebaseResponse & { id: string }
+  ) => {
     navigation.navigate("asset-form", {
       isEditing: true,
       assetDetails: asset,
@@ -27,7 +59,13 @@ export default function useAssetDetails() {
   };
 
   return {
-    onDeleteAsset,
-    navigateToEditAssetForm,
+    states: {
+      assetDetails,
+      isSubmitting,
+    },
+    functions: {
+      onDeleteAsset,
+      navigateToEditAssetForm,
+    },
   };
 }

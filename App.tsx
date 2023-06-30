@@ -9,6 +9,7 @@ import AssetsForm from "./src/screens/assets/AssetForm";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParamsList } from "./src/utils/types";
 import AssetDetails from "./src/screens/assets/AssetDetails";
+import { Toast } from "./src/components";
 
 const MainStack = createStackNavigator<RootStackParamsList>();
 
@@ -30,14 +31,14 @@ export default function App() {
             <MainStack.Screen
               name={"asset-form"}
               component={AssetsForm}
-              options={{
-                title: "Add Asset",
+              options={({ route }) => ({
+                title: route.params?.isEditing ? "Edit Asset" : "Add Asset",
                 headerStyle: {
                   elevation: 0,
                   shadowOpacity: 0,
                   backgroundColor: "#FFF4E9",
                 },
-              }}
+              })}
             />
             <MainStack.Screen
               name={"asset-details"}
@@ -53,6 +54,8 @@ export default function App() {
             />
           </MainStack.Navigator>
         </NavigationContainer>
+
+        <Toast />
       </SafeAreaView>
     </ApplicationProvider>
   );

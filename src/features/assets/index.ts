@@ -4,15 +4,14 @@ import {
   IAssetCondition,
   IAssetRateInterval,
   IAssetStatus,
+  IAssetFirebaseResponse,
 } from "./types";
-import { IAssetState, defaultAssetState, useAssetStore } from "./store";
+import { useAssetStore } from "./store";
 import useAssetDetails from "./hooks/useAssetDetails";
 import useAssetForm from "./hooks/useAssetForm";
 
 export {
   AssetCard,
-  IAssetState,
-  defaultAssetState,
   useAssetStore,
   IAsset,
   IAssetCondition,
@@ -20,4 +19,5 @@ export {
   IAssetStatus,
   useAssetDetails,
   useAssetForm,
+  IAssetFirebaseResponse,
 };
