@@ -1,5 +1,5 @@
 import { StackNavigationProp } from "@react-navigation/stack";
-import { IAsset } from "../features/assets";
+import { IAssetFirebaseResponse } from "../features/assets";
 
 export interface IOption {
   id: string;
@@ -11,10 +11,21 @@ export interface IFunctionResponse {
   message?: string;
 }
 
+export interface ITransactionResponse<T> {
+  isSuccess: boolean;
+  data: T;
+  message?: string;
+}
+
 export type RootStackParamsList = {
   main: undefined;
-  "asset-form": { isEditing?: boolean; assetDetails?: IAsset } | undefined;
-  "asset-details": { assetDetails: IAsset };
+  "asset-form":
+    | {
+        isEditing?: boolean;
+        assetDetails?: IAssetFirebaseResponse & { id: string };
+      }
+    | undefined;
+  "asset-details": { assetDetails: IAssetFirebaseResponse & { id: string } };
   assets: undefined;
   schedules: undefined;
   transactions: undefined;

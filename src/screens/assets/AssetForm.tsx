@@ -7,6 +7,7 @@ import {
   View,
   Image,
 } from "react-native";
+import { Spinner } from "@ui-kitten/components";
 import { Dropdown, useDropdown } from "../../components";
 import useTheme from "../../theme/useTheme";
 import {
@@ -31,6 +32,8 @@ export default function AssetsForm() {
       assetPhoto,
       assetCondition,
       assetRateInterval,
+      isSubmitting,
+      errors,
     },
     functions: {
       handleSubmit,
@@ -38,14 +41,16 @@ export default function AssetsForm() {
       onConditionSelect,
       onRateIntervalSelect,
       onSelectPhoto,
+      removePhoto,
+      updateAsset,
     },
   } = useAssetForm(
     route.params?.isEditing
       ? {
           ...route?.params?.assetDetails,
-          condition: route?.params?.assetDetails?.condition.id,
+          condition: route?.params?.assetDetails?.condition,
           standardRate: route?.params?.assetDetails?.standardRate.toString(),
-          rateInterval: route?.params?.assetDetails?.rateInterval?.id,
+          rateInterval: route?.params?.assetDetails?.rateInterval,
         }
       : undefined
   );
@@ -82,6 +87,9 @@ export default function AssetsForm() {
             value={assetName.value}
             onChangeText={assetName.onChange}
           />
+          {errors.name && (
+            <Text style={textStyles.fieldError}>{errors.name.message}</Text>
+          )}
         </View>
         <Text style={textStyles.fieldLabel}>Description</Text>
         <View style={styles.inputContainer}>
@@ -115,6 +123,11 @@ export default function AssetsForm() {
                 value={assetStandardRate.value}
                 onChangeText={assetStandardRate.onChange}
               />
+              {errors.standardRate && (
+                <Text style={textStyles.fieldError}>
+                  {errors.standardRate.message}
+                </Text>
+              )}
             </View>
           </View>
           <View style={containerStyles.twoColumnCol}>
@@ -129,20 +142,59 @@ export default function AssetsForm() {
           </View>
         </View>
         <Text style={textStyles.fieldLabel}>Picture</Text>
-        <View style={styles.inputContainer}>
-          <TouchableNativeFeedback onPress={pickPhoto}>
-            <View
-              style={{
-                ...(containerStyles.centerAll as object),
-                ...(buttonStyles.uploadButton as object),
-              }}
-            >
-              <Text style={{ ...(textStyles.buttonText as object) }}>
-                Upload Photo
-              </Text>
+        {assetPhoto?.value ? (
+          <View
+            style={{
+              ...(containerStyles.twoColumnRow as object),
+              marginBottom: 16,
+            }}
+          >
+            <View style={containerStyles.twoColumnCol}>
+              <TouchableNativeFeedback onPress={pickPhoto}>
+                <View
+                  style={{
+                    ...(containerStyles.centerAll as object),
+                    ...(buttonStyles.uploadButton as object),
+                  }}
+                >
+                  <Text style={{ ...(textStyles.buttonText as object) }}>
+                    Replace Image
+                  </Text>
+                </View>
+              </TouchableNativeFeedback>
             </View>
-          </TouchableNativeFeedback>
-        </View>
+            <View style={containerStyles.twoColumnCol}>
+              <TouchableNativeFeedback onPress={removePhoto}>
+                <View
+                  style={{
+                    ...(containerStyles.centerAll as object),
+                    ...(buttonStyles.destructive as object),
+                  }}
+                >
+                  <Text style={{ ...(textStyles.buttonText as object) }}>
+                    Remove Image
+                  </Text>
+                </View>
+              </TouchableNativeFeedback>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.inputContainer}>
+            <TouchableNativeFeedback onPress={pickPhoto}>
+              <View
+                style={{
+                  ...(containerStyles.centerAll as object),
+                  ...(buttonStyles.uploadButton as object),
+                }}
+              >
+                <Text style={{ ...(textStyles.buttonText as object) }}>
+                  Select Image
+                </Text>
+              </View>
+            </TouchableNativeFeedback>
+          </View>
+        )}
+
         <View
           style={{
             ...(styles.inputContainer as object),
@@ -159,14 +211,31 @@ export default function AssetsForm() {
           )}
         </View>
       </ScrollView>
-      <TouchableNativeFeedback onPress={handleSubmit(addAsset)}>
+      <TouchableNativeFeedback
+        onPress={
+          route.params?.isEditing
+            ? handleSubmit((data) =>
+                updateAsset(data, route.params?.assetDetails?.id || "")
+              )
+            : handleSubmit(addAsset)
+        }
+        disabled={isSubmitting}
+      >
         <View
           style={{
             ...(containerStyles.centerAll as object),
-            ...(buttonStyles.cta as object),
+            ...(isSubmitting
+              ? (buttonStyles.disabled as object)
+              : (buttonStyles.cta as object)),
           }}
         >
-          <Text style={{ ...(textStyles.buttonText as object) }}>Confirm</Text>
+          {isSubmitting ? (
+            <Spinner style={styles.spinnerStyle} />
+          ) : (
+            <Text style={{ ...(textStyles.buttonText as object) }}>
+              Confirm
+            </Text>
+          )}
         </View>
       </TouchableNativeFeedback>
     </View>
@@ -177,5 +246,8 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginTop: 4,
     marginBottom: 16,
+  },
+  spinnerStyle: {
+    borderColor: "white",
   },
 });

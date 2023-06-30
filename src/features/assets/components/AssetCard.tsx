@@ -6,23 +6,39 @@ import {
   TouchableNativeFeedback,
 } from "react-native";
 import useTheme from "../../../theme/useTheme";
-import { IAsset, IAssetStatus } from "../types";
+import { IAssetFirebaseResponse } from "../types";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationScreensType } from "../../../utils/types";
+import { useAssetStore } from "../store";
+import { IMAGE_PLACEHOLDER } from "../../../utils/contstants";
 
-interface IAssetCardProps extends IAsset {}
+interface IAssetCardProps extends IAssetFirebaseResponse {
+  id: string;
+}
 
 export default function AssetCard(props: IAssetCardProps) {
-  const { name, condition, photo, rateInterval, standardRate, status } = props;
+  const { name, condition, photoUrl, rateInterval, standardRate, status } =
+    props;
 
   const { containerStyles, textStyles } = useTheme();
   const navigation = useNavigation<NavigationScreensType>();
+  const {
+    getAssetConditionById,
+    getAssetRateIntervalById,
+    getAssetStatusById,
+  } = useAssetStore();
+
+  const assetStatus = getAssetStatusById(status);
+  const assetRateInterval = getAssetRateIntervalById(rateInterval);
+  const assetCondition = getAssetConditionById(condition);
 
   return (
     <TouchableNativeFeedback
       onPress={() =>
         navigation.push("asset-details", {
-          assetDetails: { ...props },
+          assetDetails: {
+            ...props,
+          },
         })
       }
     >
@@ -32,14 +48,14 @@ export default function AssetCard(props: IAssetCardProps) {
           backgroundColor: "white",
         }}
       >
-        <AssetCardRibbon {...status} />
+        <AssetCardRibbon {...assetStatus} />
         <View style={styles.innerContainer}>
           <View style={styles.imageContainer}>
             <Image
               resizeMethod="scale"
               resizeMode="cover"
               source={{
-                uri: photo || "https://cdn2.thecatapi.com/images/6tv.jpg",
+                uri: photoUrl || IMAGE_PLACEHOLDER,
                 height: 100,
                 width: 140,
               }}
@@ -63,7 +79,7 @@ export default function AssetCard(props: IAssetCardProps) {
                   ...(textStyles.cardFieldValue as object),
                   textTransform: "capitalize",
                 }}
-              >{`${standardRate} / ${rateInterval.name}`}</Text>
+              >{`${standardRate} / ${assetRateInterval?.name}`}</Text>
             </View>
             <View
               style={{
@@ -78,7 +94,7 @@ export default function AssetCard(props: IAssetCardProps) {
                   textTransform: "capitalize",
                 }}
               >
-                {condition.name}
+                {assetCondition?.name}
               </Text>
             </View>
           </View>
@@ -88,7 +104,7 @@ export default function AssetCard(props: IAssetCardProps) {
   );
 }
 
-function AssetCardRibbon({ id, name }: IAssetStatus) {
+function AssetCardRibbon(props: { id?: string; name?: string }) {
   return <View style={styles.idleRibbon} />;
 }
 
