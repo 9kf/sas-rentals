@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useAssetStore } from "../store";
 import { IAssetFirebaseResponse } from "../types";
 
-type TAssetList = IAssetFirebaseResponse & {
+export type TAssetList = IAssetFirebaseResponse & {
   id: string;
 };
 
-export default function useAssetList() {
+export function useAssetList() {
   const [assetList, setAssetList] = useState<TAssetList[]>([]);
 
   const { assetDocument } = useAssetStore();

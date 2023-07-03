@@ -8,6 +8,7 @@ import {
   CONDITION_OPTIONS,
   RATE_INTERVAL_OPTIONS,
 } from "../../utils/contstants";
+import { IAssetFirebaseResponse } from "./types";
 
 export function useAssetStore() {
   const assetDocument = firestore().collection("Assets");
@@ -19,7 +20,7 @@ export function useAssetStore() {
   ) {
     const filename = imgUri.substring(imgUri.lastIndexOf("/") + 1);
     const reference = storage().ref(filename);
-    // uploads file
+
     const task = await reference.putFile(imgUri);
 
     if (task.state === "error") {
@@ -31,6 +32,14 @@ export function useAssetStore() {
     }
 
     onSuccessCallback?.(task.metadata.fullPath);
+  }
+
+  async function deleteAssetImage(photoRef: string) {
+    const reference = storage().ref(photoRef);
+
+    try {
+      await reference.delete();
+    } catch (error) {}
   }
 
   async function addAsset(
@@ -87,10 +96,17 @@ export function useAssetStore() {
     onSuccessCallback?: () => void,
     onErrorCallback?: (error: any) => void
   ) {
+    const doc = (await assetDocument.doc(documentId).get()).data();
+    const photoRef = (doc as IAssetFirebaseResponse).photoRef;
+
     await assetDocument
       .doc(documentId)
       .delete()
-      .then(() => {
+      .then(async () => {
+        if (photoRef) {
+          await deleteAssetImage(photoRef);
+        }
+
         onSuccessCallback?.();
       })
       .catch((rejected) => {

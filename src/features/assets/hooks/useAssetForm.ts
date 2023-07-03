@@ -31,7 +31,7 @@ interface IUseAssetFormProps {
   photo?: string;
 }
 
-export default function useAssetForm(props?: IUseAssetFormProps) {
+export function useAssetForm(props?: IUseAssetFormProps) {
   const showToast = useToast((state) => state.showToast);
 
   const {

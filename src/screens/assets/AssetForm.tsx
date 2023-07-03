@@ -76,7 +76,7 @@ export default function AssetsForm() {
 
   return (
     <View style={containerStyles.defaultPageStyle}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ flexDirection: "row" }}>
           <Text style={textStyles.fieldLabel}>Asset Name </Text>
           <Text style={textStyles.required}>*</Text>

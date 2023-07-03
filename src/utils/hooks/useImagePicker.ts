@@ -6,11 +6,11 @@ interface IUseImagePickerProps {
   onCancelCallback?: () => void;
 }
 
-export default function useImagePicker({
+export function useImagePicker({
   onPickPhotoCallback,
   onCancelCallback,
 }: IUseImagePickerProps) {
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<string | null>(null);
 
   async function pickPhoto() {
     let result = await ImagePicker.launchImageLibraryAsync({

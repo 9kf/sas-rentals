@@ -143,6 +143,18 @@ export const ThemedTextStyles = StyleService.create({
     lineHeight: 10,
     color: "white",
   },
+  normalText: {
+    fontWeight: "normal",
+    fontSize: 16,
+    lineHeight: 16,
+    color: "black",
+  },
+  formSection: {
+    fontSize: 16,
+    lineHeight: 16,
+    fontWeight: "600",
+    color: "primary",
+  },
 });
 
 export const ThemedInputStyles = StyleService.create({
@@ -214,6 +226,16 @@ export const ThemedButtonStyles = StyleService.create({
     borderRadius: 8,
     paddingVertical: 8,
     height: 40,
+  },
+  fab: {
+    width: 48,
+    height: 48,
+    borderRadius: 9999,
+    padding: 8,
+    backgroundColor: "cta",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

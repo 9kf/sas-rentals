@@ -7,8 +7,8 @@ import {
   IAssetFirebaseResponse,
 } from "./types";
 import { useAssetStore } from "./store";
-import useAssetDetails from "./hooks/useAssetDetails";
-import useAssetForm from "./hooks/useAssetForm";
+
+export * from "./hooks";
 
 export {
   AssetCard,
@@ -17,7 +17,5 @@ export {
   IAssetCondition,
   IAssetRateInterval,
   IAssetStatus,
-  useAssetDetails,
-  useAssetForm,
   IAssetFirebaseResponse,
 };

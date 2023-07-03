@@ -19,6 +19,7 @@
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
     "@ui-kitten/components": "^5.3.1",
+    "date-fns": "^2.30.0",
     "expo": "~48.0.18",
     "expo-build-properties": "~0.2.0",
     "expo-dev-client": "~2.2.1",

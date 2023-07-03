@@ -4,6 +4,7 @@ const routes = {
   assetDetails: "asset-details",
   assets: "assets",
   schedules: "schedules",
+  rentalForm: "rental-form",
   transactions: "transactions",
   customers: "customers",
 };

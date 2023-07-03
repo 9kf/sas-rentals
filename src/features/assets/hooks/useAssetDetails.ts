@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useAssetStore } from "../store";
 import { useToast } from "../../../components";
 
-export default function useAssetDetails(assetId: string) {
+export function useAssetDetails(assetId: string) {
   const showToast = useToast((state) => state.showToast);
 
   const [isSubmitting, setIsSubmitting] = useState(false);

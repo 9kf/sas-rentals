@@ -3,7 +3,7 @@ import routes from "../../utils/routes";
 import { FlatList, Text, View } from "react-native";
 import useTheme from "../../theme/useTheme";
 import { AssetCard } from "../../features/assets";
-import useAssetList from "../../features/assets/hooks/useAssetList";
+import { useAssetList } from "../../features/assets/hooks/useAssetList";
 
 export default function Assets({ navigation }) {
   const { containerStyles, textStyles } = useTheme();
