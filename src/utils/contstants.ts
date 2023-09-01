@@ -41,23 +41,53 @@ export const CONDITION_OPTIONS: IAssetCondition[] = [
 export const RATE_INTERVAL_OPTIONS: IAssetRateInterval[] = [
   {
     id: "1",
-    name: "one time",
-  },
-  {
-    id: "2",
     name: "daily",
   },
   {
-    id: "3",
+    id: "2",
     name: "weekly",
   },
   {
-    id: "4",
+    id: "3",
     name: "monthly",
   },
   {
-    id: "5",
+    id: "4",
     name: "yearly",
+  },
+  // {
+  //   id: "5",
+  //   name: "one time",
+  // },
+];
+
+export const PAYMENT_STATUS_OPTIONS = [
+  {
+    id: "1",
+    name: "pending",
+  },
+  // {
+  //   id: "2",
+  //   name: "paid partially",
+  // },
+  {
+    id: "3",
+    name: "paid",
+  },
+];
+
+export const RENTAL_STATUS_OPTIONS = [
+  {
+    id: "1",
+    name: "not delivered",
+  },
+  {
+    id: "2",
+    name: "delivered",
+  },
+  {
+    id: "3",
+    name: "returned",
   },
 ];
 
@@ -71,8 +101,4 @@ export const DEFAULT_SUCCESS_MESSAGES = {
 export const DEFAULT_ERROR_MESSAGES = {
   ADD_ERROR: "There was a problem adding",
   DELETE_ERROR: "There was a problem deleting",
-};
-
-export const DOCUMENTS = {
-  assets: "ASSETS",
 };

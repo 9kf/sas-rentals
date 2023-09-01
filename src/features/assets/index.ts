@@ -6,18 +6,16 @@ import {
   IAssetStatus,
   IAssetFirebaseResponse,
 } from "./types";
-import { useAssetStore } from "./store";
-import useAssetDetails from "./hooks/useAssetDetails";
-import useAssetForm from "./hooks/useAssetForm";
+import { useAssetService } from "./service";
+
+export * from "./hooks";
 
 export {
   AssetCard,
-  useAssetStore,
+  useAssetService,
   IAsset,
   IAssetCondition,
   IAssetRateInterval,
   IAssetStatus,
-  useAssetDetails,
-  useAssetForm,
   IAssetFirebaseResponse,
 };

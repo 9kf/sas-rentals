@@ -8,6 +8,9 @@ import {
   Image,
 } from "react-native";
 import { Spinner } from "@ui-kitten/components";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
 import { Dropdown, useDropdown } from "../../components";
 import useTheme from "../../theme/useTheme";
 import {
@@ -16,22 +19,27 @@ import {
 } from "../../utils/contstants";
 import { useImagePicker } from "../../utils/hooks";
 import { useAssetForm } from "../../features/assets";
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamsList } from "../../utils/types";
 
-export default function AssetsForm() {
-  const { buttonStyles, containerStyles, inputStyles, textStyles } = useTheme();
+export interface IAssetFormProps {
+  route: RouteProp<RootStackParamsList, "asset-form">;
+  navigation: StackNavigationProp<RootStackParamsList, "asset-form">;
+}
 
-  const route = useRoute<RouteProp<RootStackParamsList, "asset-form">>();
+export default function AssetsForm({ route }: IAssetFormProps) {
+  const { buttonStyles, containerStyles, inputStyles, textStyles } = useTheme();
 
   const {
     states: {
       assetName,
+      assetDailyRate,
+      assetMonthlyRate,
+      assetWeeklyRate,
+      assetYearlyRate,
       assetDescription,
-      assetStandardRate,
       assetPhoto,
       assetCondition,
-      assetRateInterval,
+      assetStandardRateInterval,
       isSubmitting,
       errors,
     },
@@ -49,8 +57,7 @@ export default function AssetsForm() {
       ? {
           ...route?.params?.assetDetails,
           condition: route?.params?.assetDetails?.condition,
-          standardRate: route?.params?.assetDetails?.standardRate.toString(),
-          rateInterval: route?.params?.assetDetails?.rateInterval,
+          dailyRate: route?.params?.assetDetails?.dailyRate || "0",
         }
       : undefined
   );
@@ -61,13 +68,14 @@ export default function AssetsForm() {
       onSelectCallback: onConditionSelect,
       defaultSelectedValue: assetCondition?.value,
     });
+
   const {
-    getSelectedOption: getSelectedRateInterval,
-    ...dropdownRateIntervalProps
+    getSelectedOption: getSelectedStandardRateInterval,
+    ...dropdownStandardRateIntervalProps
   } = useDropdown({
     options: RATE_INTERVAL_OPTIONS,
     onSelectCallback: onRateIntervalSelect,
-    defaultSelectedValue: assetRateInterval?.value,
+    defaultSelectedValue: assetStandardRateInterval?.value,
   });
 
   const { pickPhoto } = useImagePicker({
@@ -76,7 +84,7 @@ export default function AssetsForm() {
 
   return (
     <View style={containerStyles.defaultPageStyle}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ flexDirection: "row" }}>
           <Text style={textStyles.fieldLabel}>Asset Name </Text>
           <Text style={textStyles.required}>*</Text>
@@ -102,50 +110,18 @@ export default function AssetsForm() {
           />
         </View>
         <Text style={textStyles.fieldLabel}>Condition</Text>
-        <View style={{ ...(styles.inputContainer as object), zIndex: 50 }}>
+        <View style={{ ...styles.inputContainer, zIndex: 50 }}>
           <Dropdown
             {...dropdownConditionProps}
             getSelectedOption={getSelectedCondition}
           />
         </View>
-        <View
-          style={{ ...(containerStyles.twoColumnRow as object), zIndex: 10 }}
-        >
-          <View style={containerStyles.twoColumnCol}>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={textStyles.fieldLabel}>Standard Rate </Text>
-              <Text style={textStyles.required}>*</Text>
-            </View>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={inputStyles.textInput}
-                keyboardType="number-pad"
-                value={assetStandardRate.value}
-                onChangeText={assetStandardRate.onChange}
-              />
-              {errors.standardRate && (
-                <Text style={textStyles.fieldError}>
-                  {errors.standardRate.message}
-                </Text>
-              )}
-            </View>
-          </View>
-          <View style={containerStyles.twoColumnCol}>
-            <Text style={textStyles.fieldLabel}>Rate Interval</Text>
-            <View style={styles.inputContainer}>
-              <Dropdown
-                {...dropdownRateIntervalProps}
-                getSelectedOption={getSelectedRateInterval}
-                optionsContainerMaxHeight={100}
-              />
-            </View>
-          </View>
-        </View>
+
         <Text style={textStyles.fieldLabel}>Picture</Text>
         {assetPhoto?.value ? (
           <View
             style={{
-              ...(containerStyles.twoColumnRow as object),
+              ...containerStyles.twoColumnRow,
               marginBottom: 16,
             }}
           >
@@ -153,11 +129,11 @@ export default function AssetsForm() {
               <TouchableNativeFeedback onPress={pickPhoto}>
                 <View
                   style={{
-                    ...(containerStyles.centerAll as object),
-                    ...(buttonStyles.uploadButton as object),
+                    ...containerStyles.centerAll,
+                    ...buttonStyles.uploadButton,
                   }}
                 >
-                  <Text style={{ ...(textStyles.buttonText as object) }}>
+                  <Text style={{ ...textStyles.buttonText }}>
                     Replace Image
                   </Text>
                 </View>
@@ -167,13 +143,11 @@ export default function AssetsForm() {
               <TouchableNativeFeedback onPress={removePhoto}>
                 <View
                   style={{
-                    ...(containerStyles.centerAll as object),
-                    ...(buttonStyles.destructive as object),
+                    ...containerStyles.centerAll,
+                    ...buttonStyles.destructive,
                   }}
                 >
-                  <Text style={{ ...(textStyles.buttonText as object) }}>
-                    Remove Image
-                  </Text>
+                  <Text style={{ ...textStyles.buttonText }}>Remove Image</Text>
                 </View>
               </TouchableNativeFeedback>
             </View>
@@ -183,13 +157,11 @@ export default function AssetsForm() {
             <TouchableNativeFeedback onPress={pickPhoto}>
               <View
                 style={{
-                  ...(containerStyles.centerAll as object),
-                  ...(buttonStyles.uploadButton as object),
+                  ...containerStyles.centerAll,
+                  ...buttonStyles.uploadButton,
                 }}
               >
-                <Text style={{ ...(textStyles.buttonText as object) }}>
-                  Select Image
-                </Text>
+                <Text style={{ ...textStyles.buttonText }}>Select Image</Text>
               </View>
             </TouchableNativeFeedback>
           </View>
@@ -197,8 +169,8 @@ export default function AssetsForm() {
 
         <View
           style={{
-            ...(styles.inputContainer as object),
-            ...(containerStyles.centerAll as object),
+            ...styles.inputContainer,
+            ...containerStyles.centerAll,
           }}
         >
           {assetPhoto?.value ? (
@@ -209,6 +181,78 @@ export default function AssetsForm() {
           ) : (
             <Text>No Photo</Text>
           )}
+        </View>
+
+        <Text style={{ ...textStyles.formSection, marginVertical: 16 }}>
+          Rates
+        </Text>
+
+        {/* Standard Rate Interval */}
+        <View style={containerStyles.twoColumnCol}>
+          <Text style={textStyles.fieldLabel}>Standard Rate Interval</Text>
+          <View style={styles.inputContainer}>
+            <Dropdown
+              {...dropdownStandardRateIntervalProps}
+              getSelectedOption={getSelectedStandardRateInterval}
+              // optionsContainerMaxHeight={100}
+            />
+          </View>
+        </View>
+
+        {/* Daily rate */}
+        <View style={{ flexDirection: "row" }}>
+          <Text style={textStyles.fieldLabel}>Daily Rate </Text>
+          <Text style={textStyles.required}>*</Text>
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={inputStyles.textInput}
+            value={assetDailyRate.value}
+            placeholder="0 Php"
+            inputMode="numeric"
+            onChangeText={assetDailyRate.onChange}
+          />
+          {errors.dailyRate && (
+            <Text style={textStyles.fieldError}>
+              {errors.dailyRate.message}
+            </Text>
+          )}
+        </View>
+
+        {/* Weekly rate */}
+        <Text style={textStyles.fieldLabel}>Weekly Rate </Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={inputStyles.textInput}
+            value={assetWeeklyRate.value || ""}
+            placeholder="0 Php"
+            inputMode="numeric"
+            onChangeText={assetWeeklyRate.onChange}
+          />
+        </View>
+
+        {/* Monthly Rate */}
+        <Text style={textStyles.fieldLabel}>Monthly Rate </Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={inputStyles.textInput}
+            value={assetMonthlyRate.value || ""}
+            placeholder="0 Php"
+            inputMode="numeric"
+            onChangeText={assetMonthlyRate.onChange}
+          />
+        </View>
+
+        {/* Yearly Rate */}
+        <Text style={textStyles.fieldLabel}>Yearly Rate </Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={inputStyles.textInput}
+            value={assetYearlyRate.value || ""}
+            placeholder="0 Php"
+            inputMode="numeric"
+            onChangeText={assetYearlyRate.onChange}
+          />
         </View>
       </ScrollView>
       <TouchableNativeFeedback
@@ -223,18 +267,14 @@ export default function AssetsForm() {
       >
         <View
           style={{
-            ...(containerStyles.centerAll as object),
-            ...(isSubmitting
-              ? (buttonStyles.disabled as object)
-              : (buttonStyles.cta as object)),
+            ...containerStyles.centerAll,
+            ...(isSubmitting ? buttonStyles.disabled : buttonStyles.cta),
           }}
         >
           {isSubmitting ? (
             <Spinner style={styles.spinnerStyle} />
           ) : (
-            <Text style={{ ...(textStyles.buttonText as object) }}>
-              Confirm
-            </Text>
+            <Text style={{ ...textStyles.buttonText }}>Confirm</Text>
           )}
         </View>
       </TouchableNativeFeedback>

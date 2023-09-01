@@ -9,7 +9,7 @@ import useTheme from "../../../theme/useTheme";
 import { IAssetFirebaseResponse } from "../types";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationScreensType } from "../../../utils/types";
-import { useAssetStore } from "../store";
+import { useAssetService } from "../../assets";
 import { IMAGE_PLACEHOLDER } from "../../../utils/contstants";
 
 interface IAssetCardProps extends IAssetFirebaseResponse {
@@ -17,19 +17,14 @@ interface IAssetCardProps extends IAssetFirebaseResponse {
 }
 
 export default function AssetCard(props: IAssetCardProps) {
-  const { name, condition, photoUrl, rateInterval, standardRate, status } =
+  const { name, condition, photoUrl, dailyRate, status, color, overallProfit } =
     props;
 
   const { containerStyles, textStyles } = useTheme();
   const navigation = useNavigation<NavigationScreensType>();
-  const {
-    getAssetConditionById,
-    getAssetRateIntervalById,
-    getAssetStatusById,
-  } = useAssetStore();
+  const { getAssetConditionById, getAssetStatusById } = useAssetService();
 
   const assetStatus = getAssetStatusById(status);
-  const assetRateInterval = getAssetRateIntervalById(rateInterval);
   const assetCondition = getAssetConditionById(condition);
 
   return (
@@ -44,7 +39,7 @@ export default function AssetCard(props: IAssetCardProps) {
     >
       <View
         style={{
-          ...(containerStyles.cardContainer as object),
+          ...containerStyles.cardContainer,
           backgroundColor: "white",
         }}
       >
@@ -62,35 +57,53 @@ export default function AssetCard(props: IAssetCardProps) {
             />
           </View>
           <View style={styles.infoContainer}>
-            <Text
-              style={{ ...(textStyles.cardTitle as object), marginBottom: 6 }}
-            >
-              {name}
-            </Text>
             <View
               style={{
-                ...(containerStyles.rowCenterAlign as object),
+                flexDirection: "row",
+                gap: 6,
+                alignItems: "center",
                 marginBottom: 6,
               }}
             >
-              <Text style={textStyles.cardFieldLabel}>Rate: </Text>
-              <Text
+              <Text style={textStyles.cardTitle}>{name}</Text>
+              <View
                 style={{
-                  ...(textStyles.cardFieldValue as object),
-                  textTransform: "capitalize",
+                  backgroundColor: color,
+                  borderRadius: 9999,
+                  height: 12,
+                  width: 12,
                 }}
-              >{`${standardRate} / ${assetRateInterval?.name}`}</Text>
+              />
             </View>
             <View
               style={{
-                ...(containerStyles.rowCenterAlign as object),
+                ...containerStyles.rowCenterAlign,
+                marginBottom: 6,
+              }}
+            >
+              <Text style={textStyles.cardFieldLabel}>Overall Profit: </Text>
+              <Text
+                style={{
+                  ...textStyles.cardFieldValue,
+                  textTransform: "capitalize",
+                }}
+              >
+                {new Intl.NumberFormat("en-IN", {
+                  style: "currency",
+                  currency: "PHP",
+                }).format(overallProfit || 0)}
+              </Text>
+            </View>
+            <View
+              style={{
+                ...containerStyles.rowCenterAlign,
                 marginBottom: 6,
               }}
             >
               <Text style={textStyles.cardFieldLabel}>Condition: </Text>
               <Text
                 style={{
-                  ...(textStyles.cardFieldValue as object),
+                  ...textStyles.cardFieldValue,
                   textTransform: "capitalize",
                 }}
               >

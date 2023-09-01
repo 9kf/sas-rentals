@@ -1,6 +1,7 @@
 import MaterialCommunityIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import { StyleService, useStyleSheet } from "@ui-kitten/components";
 import { TouchableNativeFeedback, View } from "react-native";
+import useTheme from "../../theme/useTheme";
 
 interface IFloatingActionButtonProps {
   onClick?: () => void;
@@ -8,13 +9,14 @@ interface IFloatingActionButtonProps {
 
 export function FloatingActionButton({ onClick }: IFloatingActionButtonProps) {
   const styles = useStyleSheet(fabStyles);
+  const { buttonStyles } = useTheme();
   return (
     <View style={styles.fabContainer}>
       <TouchableNativeFeedback
         style={styles.fabButtonContainer}
         onPress={() => onClick?.()}
       >
-        <View style={styles.fab}>
+        <View style={buttonStyles.fab}>
           <MaterialCommunityIcon name="plus" color="white" size={32} />
         </View>
       </TouchableNativeFeedback>
@@ -36,15 +38,5 @@ const fabStyles = StyleService.create({
     width: 48,
     height: 48,
     borderRadius: 9999,
-  },
-  fab: {
-    width: 48,
-    height: 48,
-    borderRadiues: 9999,
-    padding: 8,
-    backgroundColor: "cta",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

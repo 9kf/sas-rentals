@@ -8,8 +8,9 @@ import {
   CONDITION_OPTIONS,
   RATE_INTERVAL_OPTIONS,
 } from "../../utils/contstants";
+import { IAssetFirebaseResponse } from "./types";
 
-export function useAssetStore() {
+export function useAssetService() {
   const assetDocument = firestore().collection("Assets");
 
   async function uploadAssetImage(
@@ -19,7 +20,7 @@ export function useAssetStore() {
   ) {
     const filename = imgUri.substring(imgUri.lastIndexOf("/") + 1);
     const reference = storage().ref(filename);
-    // uploads file
+
     const task = await reference.putFile(imgUri);
 
     if (task.state === "error") {
@@ -33,8 +34,28 @@ export function useAssetStore() {
     onSuccessCallback?.(task.metadata.fullPath);
   }
 
+  async function deleteAssetImage(photoRef: string) {
+    const reference = storage().ref(photoRef);
+
+    try {
+      await reference.delete();
+    } catch (error) {}
+  }
+
+  async function getAssetById(assetId: string) {
+    try {
+      const response = (
+        await assetDocument.doc(assetId).get()
+      ).data() as IAssetFirebaseResponse;
+      return response;
+    } catch (error) {
+      return;
+    }
+  }
+
   async function addAsset(
     data: Omit<AssetFormSchemaType, "photo"> & {
+      color: string;
       status: string;
       lastCustomer: string | null;
       lastRentalSchedule: string | null;
@@ -87,10 +108,17 @@ export function useAssetStore() {
     onSuccessCallback?: () => void,
     onErrorCallback?: (error: any) => void
   ) {
+    const doc = (await assetDocument.doc(documentId).get()).data();
+    const photoRef = (doc as IAssetFirebaseResponse).photoRef;
+
     await assetDocument
       .doc(documentId)
       .delete()
-      .then(() => {
+      .then(async () => {
+        if (photoRef) {
+          await deleteAssetImage(photoRef);
+        }
+
         onSuccessCallback?.();
       })
       .catch((rejected) => {
@@ -115,6 +143,7 @@ export function useAssetStore() {
   return {
     assetDocument,
     uploadAssetImage,
+    getAssetById,
     addAsset,
     updateAsset,
     deleteAsset,

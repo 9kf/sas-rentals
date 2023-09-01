@@ -12,7 +12,7 @@ export function useDropdown<T extends IOption>({
   onSelectCallback,
   defaultSelectedValue,
 }: IUseDropdown<T>) {
-  const defaultSelectedOption = options[0].id;
+  const defaultSelectedOption = options[0]?.id;
 
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(
