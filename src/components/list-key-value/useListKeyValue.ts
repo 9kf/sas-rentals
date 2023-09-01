@@ -10,7 +10,12 @@ const listKeyValueSchema = z.object({
 
 export type ListKeyValueSchemaType = z.infer<typeof listKeyValueSchema>;
 
-export function useListKeyValue() {
+interface IUseListKeyValueProps {
+  onAdd?: (values: ListKeyValueSchemaType[]) => void;
+  onRemove?: (values: ListKeyValueSchemaType[]) => void;
+}
+
+export function useListKeyValue(props?: IUseListKeyValueProps) {
   const {
     control,
     handleSubmit,
@@ -36,14 +41,22 @@ export function useListKeyValue() {
   const [values, setValues] = useState<ListKeyValueSchemaType[]>([]);
 
   const addValue: SubmitHandler<ListKeyValueSchemaType> = (data) => {
-    setValues([...values, data]);
+    const newValues = [...values, data];
+    props?.onAdd?.(newValues);
+    setValues(newValues);
     setValue("name", "");
     setValue("value", "");
     trigger();
   };
 
   function removeValue(index: number) {
-    setValues(values.filter((val, i) => i !== index));
+    const newValues = values.filter((val, i) => i !== index);
+    props?.onAdd?.(newValues);
+    setValues(newValues);
+  }
+
+  function overrideValues(newValues: ListKeyValueSchemaType[]) {
+    setValues(newValues);
   }
 
   return {
@@ -58,6 +71,7 @@ export function useListKeyValue() {
       handleSubmit,
       addValue,
       removeValue,
+      overrideValues,
     },
   };
 }

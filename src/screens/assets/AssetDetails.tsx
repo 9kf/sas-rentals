@@ -4,49 +4,87 @@ import {
   View,
   Image,
   TouchableNativeFeedback,
+  ScrollView,
 } from "react-native";
-import useTheme from "../../theme/useTheme";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { RootStackParamsList } from "../../utils/types";
+import { RouteProp } from "@react-navigation/native";
 import { Modal } from "@ui-kitten/components";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+import useTheme from "../../theme/useTheme";
+import { RootStackParamsList } from "../../utils/types";
 import { useModal } from "../../utils/hooks";
 import { useAssetDetails } from "../../features/assets";
 import { IMAGE_PLACEHOLDER } from "../../utils/contstants";
-import { useAssetStore } from "../../features/assets";
+import { useAssetService } from "../../features/assets";
+import { useEffect } from "react";
+import { HeaderActions } from "../../components";
+import { RentalCard } from "../../features/scheduling";
 
-export default function AssetDetails() {
+export interface IAssetDetailsProps {
+  route: RouteProp<RootStackParamsList, "asset-details">;
+  navigation: StackNavigationProp<RootStackParamsList, "asset-details">;
+}
+
+export default function AssetDetails({
+  route,
+  navigation,
+}: IAssetDetailsProps) {
   const { buttonStyles, containerStyles, textStyles } = useTheme();
 
-  const route = useRoute<RouteProp<RootStackParamsList, "asset-details">>();
   const {
     name,
     condition,
     description,
-    rateInterval,
-    standardRate,
-    lastRentalSchedule,
+    dailyRate,
     overallProfit,
     id,
+    weeklyRate,
+    monthlyRate,
+    yearlyRate,
   } = route.params.assetDetails;
 
   const { isVisible, onBackdropPress, showModal, toggleModal } = useModal();
 
   const {
-    states: { assetDetails, isSubmitting },
+    states: { assetDetails, isSubmitting, rentals },
     functions: { onDeleteAsset, navigateToEditAssetForm },
   } = useAssetDetails(id);
 
-  const { getAssetConditionById, getAssetRateIntervalById } = useAssetStore();
+  const { getAssetConditionById } = useAssetService();
 
-  const assetRateInterval = getAssetRateIntervalById(
-    assetDetails?.rateInterval || rateInterval
-  );
   const assetCondition = getAssetConditionById(
     assetDetails?.condition || condition
   );
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderActions
+          onPressEdit={() =>
+            navigateToEditAssetForm(
+              ({
+                ...assetDetails,
+                id: route.params?.assetDetails?.id,
+              } as any) || route.params?.assetDetails
+            )
+          }
+          onPressDelete={() =>
+            navigation.push("confirm-delete-modal", {
+              confirmationMessage:
+                "Are you sure you want to delete this asset?",
+              title: "Confirmation",
+              onPressDelete: () => {
+                onDeleteAsset(id);
+              },
+            })
+          }
+        />
+      ),
+    });
+  }, []);
+
   return (
-    <View style={containerStyles.defaultPageStyle}>
+    <ScrollView style={containerStyles.defaultPageStyle}>
       <View style={styles.innerContainer}>
         <View style={styles.imageContainer}>
           <Image
@@ -64,7 +102,7 @@ export default function AssetDetails() {
             numberOfLines={2}
             ellipsizeMode="tail"
             style={{
-              ...(textStyles.largeTitle as object),
+              ...textStyles.largeTitle,
               marginBottom: 6,
             }}
           >
@@ -72,30 +110,33 @@ export default function AssetDetails() {
           </Text>
           <View
             style={{
-              ...(containerStyles.rowCenterAlign as object),
+              ...containerStyles.rowCenterAlign,
               marginBottom: 6,
             }}
           >
-            <Text style={textStyles.cardFieldLabel}>Rate: </Text>
+            <Text style={textStyles.cardFieldLabel}>Overall Profit: </Text>
             <Text
               style={{
-                ...(textStyles.cardFieldValue as object),
+                ...textStyles.cardFieldValue,
                 textTransform: "capitalize",
               }}
-            >{`${assetDetails?.standardRate || standardRate} / ${
-              assetRateInterval?.name
-            }`}</Text>
+            >
+              {new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "PHP",
+              }).format(overallProfit || 0)}
+            </Text>
           </View>
           <View
             style={{
-              ...(containerStyles.rowCenterAlign as object),
+              ...containerStyles.rowCenterAlign,
               marginBottom: 6,
             }}
           >
             <Text style={textStyles.cardFieldLabel}>Condition: </Text>
             <Text
               style={{
-                ...(textStyles.cardFieldValue as object),
+                ...textStyles.cardFieldValue,
                 textTransform: "capitalize",
               }}
             >
@@ -117,111 +158,92 @@ export default function AssetDetails() {
         </Text>
       </View>
 
-      <View style={{ marginTop: 24 }}>
-        <Text style={textStyles.cardFieldLabel}>Last Rental: </Text>
-        {!(assetDetails?.lastRentalSchedule || lastRentalSchedule) && (
-          <Text
-            style={{
-              ...styles.detailValue,
-              marginTop: 6,
-            }}
-          >
-            Not yet rented
-          </Text>
-        )}
-      </View>
+      <Text style={{ ...textStyles.formSection, marginTop: 24 }}>Rates</Text>
 
-      <View style={{ marginTop: 24 }}>
-        <Text style={textStyles.cardFieldLabel}>Overall Profit: </Text>
+      <View style={{ marginTop: 8 }}>
+        <Text style={textStyles.cardFieldLabel}>Daily rate: </Text>
         <Text
           style={{
             ...styles.detailValue,
             marginTop: 6,
           }}
         >
-          {`${assetDetails?.overallProfit || overallProfit} Php`}
+          {new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "PHP",
+          }).format(parseFloat(dailyRate) || 0)}
         </Text>
       </View>
 
-      <View style={{ flex: 1 }} />
-
-      <TouchableNativeFeedback
-        onPress={() =>
-          navigateToEditAssetForm(
-            ({ ...assetDetails, id: route.params?.assetDetails?.id } as any) ||
-              route.params?.assetDetails
-          )
-        }
-      >
-        <View
-          style={{
-            ...(containerStyles.centerAll as object),
-            ...(buttonStyles.cta as object),
-          }}
-        >
-          <Text style={textStyles.buttonText}>Edit</Text>
-        </View>
-      </TouchableNativeFeedback>
-      <TouchableNativeFeedback onPress={showModal}>
-        <View
-          style={{
-            ...(containerStyles.centerAll as object),
-            ...(buttonStyles.destructive as object),
-            marginTop: 8,
-          }}
-        >
-          <Text style={textStyles.buttonText}>Delete</Text>
-        </View>
-      </TouchableNativeFeedback>
-
-      <Modal
-        visible={isVisible}
-        onBackdropPress={onBackdropPress}
-        backdropStyle={containerStyles.defaultModalBackdrop}
-      >
-        <View style={containerStyles.defaultModalContainer}>
-          <Text style={textStyles.modalTitle}>Confirmation</Text>
-          <View style={{ marginVertical: 6 }} />
+      {weeklyRate && weeklyRate !== "" && (
+        <View style={{ marginTop: 8 }}>
+          <Text style={textStyles.cardFieldLabel}>Weekly rate: </Text>
           <Text
-            style={textStyles.modalDescription}
-          >{`Do you really want to delete the asset ${
-            assetDetails?.name || name
-          }?`}</Text>
-          <View style={{ marginVertical: 16 }} />
-          <TouchableNativeFeedback
-            onPress={() => onDeleteAsset(id)}
-            disabled={isSubmitting}
+            style={{
+              ...styles.detailValue,
+              marginTop: 6,
+            }}
           >
-            <View
-              style={{
-                ...(containerStyles.centerAll as object),
-                ...(isSubmitting
-                  ? (buttonStyles.disabled as object)
-                  : (buttonStyles.destructive as object)),
-              }}
-            >
-              <Text style={textStyles.buttonText}>Confirm</Text>
-            </View>
-          </TouchableNativeFeedback>
-          <TouchableNativeFeedback
-            onPress={toggleModal}
-            disabled={isSubmitting}
-          >
-            <View
-              style={{
-                ...(containerStyles.centerAll as object),
-                ...(isSubmitting
-                  ? (buttonStyles.disabled as object)
-                  : (buttonStyles.cancel as object)),
-                marginTop: 8,
-              }}
-            >
-              <Text style={textStyles.buttonText}>Cancel</Text>
-            </View>
-          </TouchableNativeFeedback>
+            {new Intl.NumberFormat("en-IN", {
+              style: "currency",
+              currency: "PHP",
+            }).format(parseFloat(weeklyRate) || 0)}
+          </Text>
         </View>
-      </Modal>
-    </View>
+      )}
+
+      {monthlyRate && monthlyRate !== "" && (
+        <View style={{ marginTop: 8 }}>
+          <Text style={textStyles.cardFieldLabel}>Monthly rate: </Text>
+          <Text
+            style={{
+              ...styles.detailValue,
+              marginTop: 6,
+            }}
+          >
+            {new Intl.NumberFormat("en-IN", {
+              style: "currency",
+              currency: "PHP",
+            }).format(parseFloat(monthlyRate) || 0)}
+          </Text>
+        </View>
+      )}
+
+      {yearlyRate && yearlyRate !== "" && (
+        <View style={{ marginTop: 8 }}>
+          <Text style={textStyles.cardFieldLabel}>Yearly rate: </Text>
+          <Text
+            style={{
+              ...styles.detailValue,
+              marginTop: 6,
+            }}
+          >
+            {new Intl.NumberFormat("en-IN", {
+              style: "currency",
+              currency: "PHP",
+            }).format(parseFloat(yearlyRate) || 0)}
+          </Text>
+        </View>
+      )}
+
+      <View style={{ marginTop: 24 }}>
+        <Text style={textStyles.formSection}>Recent Rentals: </Text>
+      </View>
+
+      <View style={{ marginTop: 8 }}>
+        {rentals.map((rental) => (
+          <RentalCard
+            key={rental.id}
+            {...rental}
+            onClickCard={() =>
+              navigation.push("rental-details", {
+                rentalDetails: rental,
+              })
+            }
+          />
+        ))}
+      </View>
+    </ScrollView>
   );
 }
 

@@ -1,11 +1,19 @@
-import { FloatingActionButton } from "../../components";
-import routes from "../../utils/routes";
 import { FlatList, Text, View } from "react-native";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+import { FloatingActionButton } from "../../components";
 import useTheme from "../../theme/useTheme";
 import { AssetCard } from "../../features/assets";
 import { useAssetList } from "../../features/assets/hooks/useAssetList";
+import { RootStackParamsList } from "../../utils/types";
 
-export default function Assets({ navigation }) {
+export interface IAssetsProps {
+  route: RouteProp<RootStackParamsList, "assets">;
+  navigation: StackNavigationProp<RootStackParamsList, "assets">;
+}
+
+export default function Assets({ navigation }: IAssetsProps) {
   const { containerStyles, textStyles } = useTheme();
   const { assetList } = useAssetList();
 
@@ -23,7 +31,7 @@ export default function Assets({ navigation }) {
           <Text style={textStyles.title}>No Assets</Text>
         </View>
       )}
-      <FloatingActionButton onClick={() => navigation.push(routes.assetForm)} />
+      <FloatingActionButton onClick={() => navigation.push("asset-form")} />
     </View>
   );
 }

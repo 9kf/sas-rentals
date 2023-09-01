@@ -10,7 +10,7 @@ import {
 } from "../../utils/contstants";
 import { IAssetFirebaseResponse } from "./types";
 
-export function useAssetStore() {
+export function useAssetService() {
   const assetDocument = firestore().collection("Assets");
 
   async function uploadAssetImage(
@@ -42,8 +42,20 @@ export function useAssetStore() {
     } catch (error) {}
   }
 
+  async function getAssetById(assetId: string) {
+    try {
+      const response = (
+        await assetDocument.doc(assetId).get()
+      ).data() as IAssetFirebaseResponse;
+      return response;
+    } catch (error) {
+      return;
+    }
+  }
+
   async function addAsset(
     data: Omit<AssetFormSchemaType, "photo"> & {
+      color: string;
       status: string;
       lastCustomer: string | null;
       lastRentalSchedule: string | null;
@@ -131,6 +143,7 @@ export function useAssetStore() {
   return {
     assetDocument,
     uploadAssetImage,
+    getAssetById,
     addAsset,
     updateAsset,
     deleteAsset,

@@ -4,19 +4,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationScreensType } from "../../../utils/types";
-import { useAssetStore } from "../../../features/assets";
+import { useAssetService } from "../service";
 import { ASSET_STATUSES } from "../../../utils/contstants";
 import { useState } from "react";
 import storage from "@react-native-firebase/storage";
 import firestore from "@react-native-firebase/firestore";
 import { useToast } from "../../../components";
+import { generateRandomLightColor } from "../helpers";
 
 const assetFormSchema = z.object({
   name: z.string().min(3, { message: "Field is required" }),
   description: z.string(),
   condition: z.string(),
-  standardRate: z.string().min(1, { message: "Field is requried" }),
-  rateInterval: z.string(),
+  standardRateInterval: z.string(),
+  dailyRate: z.string().min(1, { message: "Field is requried" }),
+  weeklyRate: z.string().nullable(),
+  monthlyRate: z.string().nullable(),
+  yearlyRate: z.string().nullable(),
   photo: z.string().nullable(),
 });
 
@@ -26,8 +30,11 @@ interface IUseAssetFormProps {
   name?: string;
   description?: string;
   condition?: string;
-  standardRate?: string;
-  rateInterval?: string;
+  standardRateInterval?: string;
+  dailyRate: string;
+  weeklyRate?: string;
+  monthlyRate?: string;
+  yearlyRate?: string;
   photo?: string;
 }
 
@@ -47,7 +54,7 @@ export function useAssetForm(props?: IUseAssetFormProps) {
     uploadAssetImage,
     addAsset: addAssetToStore,
     updateAsset: updateAssetToStore,
-  } = useAssetStore();
+  } = useAssetService();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { field: assetName } = useController({
@@ -68,16 +75,34 @@ export function useAssetForm(props?: IUseAssetFormProps) {
     name: "condition",
   });
 
-  const { field: assetStandardRate } = useController({
+  const { field: assetStandardRateInterval } = useController({
     control,
-    defaultValue: props?.standardRate || "",
-    name: "standardRate",
+    defaultValue: props?.standardRateInterval || "",
+    name: "standardRateInterval",
   });
 
-  const { field: assetRateInterval } = useController({
+  const { field: assetDailyRate } = useController({
     control,
-    defaultValue: props?.rateInterval || "",
-    name: "rateInterval",
+    defaultValue: props?.dailyRate || "",
+    name: "dailyRate",
+  });
+
+  const { field: assetWeeklyRate } = useController({
+    control,
+    defaultValue: props?.weeklyRate || "",
+    name: "weeklyRate",
+  });
+
+  const { field: assetMonthlyRate } = useController({
+    control,
+    defaultValue: props?.monthlyRate || "",
+    name: "monthlyRate",
+  });
+
+  const { field: assetYearlyRate } = useController({
+    control,
+    defaultValue: props?.yearlyRate || "",
+    name: "yearlyRate",
   });
 
   const { field: assetPhoto } = useController({
@@ -90,12 +115,14 @@ export function useAssetForm(props?: IUseAssetFormProps) {
 
   const addAsset: SubmitHandler<AssetFormSchemaType> = async (data) => {
     setIsSubmitting(true);
+    const assetColor = generateRandomLightColor();
     if (data.photo) {
       await uploadAssetImage(data.photo, async (imgPath) => {
         const url = await storage().ref(imgPath).getDownloadURL();
         await addAssetToStore(
           {
             ...data,
+            color: assetColor,
             photoUrl: url,
             photoRef: imgPath,
             status: ASSET_STATUSES[0].id,
@@ -124,6 +151,7 @@ export function useAssetForm(props?: IUseAssetFormProps) {
       await addAssetToStore(
         {
           ...data,
+          color: assetColor,
           status: ASSET_STATUSES[0].id,
           lastCustomer: null,
           lastRentalSchedule: null,
@@ -207,7 +235,7 @@ export function useAssetForm(props?: IUseAssetFormProps) {
   };
 
   const onRateIntervalSelect = (optionId: string) => {
-    setValue("rateInterval", optionId);
+    setValue("standardRateInterval", optionId);
   };
 
   const onSelectPhoto = (img: ImagePickerAsset) => {
@@ -223,8 +251,11 @@ export function useAssetForm(props?: IUseAssetFormProps) {
       assetName,
       assetDescription,
       assetCondition,
-      assetRateInterval,
-      assetStandardRate,
+      assetStandardRateInterval,
+      assetDailyRate,
+      assetWeeklyRate,
+      assetMonthlyRate,
+      assetYearlyRate,
       assetPhoto,
       isSubmitting,
       errors,

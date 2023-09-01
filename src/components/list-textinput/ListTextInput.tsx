@@ -4,6 +4,7 @@ import {
   TouchableNativeFeedback,
   View,
   Text,
+  InputModeOptions,
 } from "react-native";
 import MaterialCommunityIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import useTheme from "../../theme/useTheme";
@@ -34,10 +35,12 @@ export interface IListTextInputProps<T> {
     undefined
   >;
   removeValue: (index: number) => void;
+  inputMode?: InputModeOptions;
+  emptyPlaceholder?: string;
 }
 
 const ADD_BUTTON_WIDTH_HEIGHT = 32;
-const REMOVE_BUTTON_WIDTH_HEIGHT = 24;
+const REMOVE_BUTTON_WIDTH_HEIGHT = 30;
 
 export default function ListTextInput<T>({
   values,
@@ -47,45 +50,49 @@ export default function ListTextInput<T>({
   addValue,
   removeValue,
   handleSubmit,
+  emptyPlaceholder,
+  inputMode = "text",
 }: IListTextInputProps<T>) {
-  const { buttonStyles, inputStyles, textStyles } = useTheme();
+  const { buttonStyles, inputStyles, textStyles, containerStyles } = useTheme();
 
   return (
     <View style={{ gap: 6 }}>
-      {values.map((val, index) => (
-        <View
-          key={index}
-          style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-        >
-          <TouchableNativeFeedback
-            style={styles.btnContainer}
-            onPress={() => removeValue(index)}
-          >
-            <View
+      {values.length > 0 ? (
+        values.map((val, index) => (
+          <View key={index} style={containerStyles.itemContainer}>
+            <TouchableNativeFeedback
+              style={styles.btnContainer}
+              onPress={() => removeValue(index)}
+            >
+              <View
+                style={{
+                  ...buttonStyles.fab,
+                  backgroundColor: "red",
+                  width: REMOVE_BUTTON_WIDTH_HEIGHT,
+                  height: REMOVE_BUTTON_WIDTH_HEIGHT,
+                  marginRight: 12,
+                }}
+              >
+                <MaterialCommunityIcon name="minus" color="white" size={8} />
+              </View>
+            </TouchableNativeFeedback>
+            <Text
               style={{
-                ...buttonStyles.fab,
-                backgroundColor: "red",
-                padding: 4,
-                width: REMOVE_BUTTON_WIDTH_HEIGHT,
-                height: REMOVE_BUTTON_WIDTH_HEIGHT,
+                ...textStyles.normalText,
+                marginTop: 2,
+                borderBottomWidth: 1,
               }}
             >
-              <MaterialCommunityIcon name="minus" color="white" size={12} />
-            </View>
-          </TouchableNativeFeedback>
-          <Text style={{ ...textStyles.normalText, marginTop: 2 }}>
-            {val as string}
-          </Text>
+              {val as string}
+            </Text>
+          </View>
+        ))
+      ) : (
+        <View>
+          <Text>{emptyPlaceholder ? emptyPlaceholder : "No Items"}</Text>
         </View>
-      ))}
+      )}
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <TextInput
-          style={{ ...inputStyles.textInput, flexBasis: "88%" }}
-          value={newValue.value}
-          onChangeText={newValue.onChange}
-          inputMode="numeric"
-        />
-        <View style={{ flexGrow: 1 }} />
         <TouchableNativeFeedback
           style={styles.btnContainer}
           onPress={handleSubmit(addValue)}
@@ -97,11 +104,19 @@ export default function ListTextInput<T>({
               ...(!isValid && { backgroundColor: "lightgray" }),
               width: ADD_BUTTON_WIDTH_HEIGHT,
               height: ADD_BUTTON_WIDTH_HEIGHT,
+              marginRight: 12,
             }}
           >
             <MaterialCommunityIcon name="plus" color="white" size={16} />
           </View>
         </TouchableNativeFeedback>
+        <TextInput
+          style={{ ...inputStyles.textInput, flexBasis: "88%" }}
+          value={newValue.value}
+          onChangeText={newValue.onChange}
+          inputMode={inputMode}
+        />
+        <View style={{ flexGrow: 1 }} />
       </View>
     </View>
   );

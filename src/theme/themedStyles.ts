@@ -42,12 +42,16 @@ export const ThemedContainerStyles = StyleService.create({
     elevation: 4,
   },
   defaultModalBackdrop: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    paddingHorizontal: 16,
   },
   defaultModalContainer: {
-    backgroundColor: "white",
+    backgroundColor: "neutral",
     width: "100%",
-    padding: 12,
+    padding: 20,
     borderRadius: 4,
   },
   toastLayoutContainer: {
@@ -61,6 +65,14 @@ export const ThemedContainerStyles = StyleService.create({
     borderRadius: 8,
     elevation: 8,
     padding: 12,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingBottom: 4,
+    marginBottom: 2,
+    width: "88%",
   },
 });
 
@@ -147,6 +159,12 @@ export const ThemedTextStyles = StyleService.create({
     fontWeight: "normal",
     fontSize: 16,
     lineHeight: 16,
+    color: "black",
+  },
+  normalTextSmall: {
+    fontWeight: "normal",
+    fontSize: 12,
+    lineHeight: 12,
     color: "black",
   },
   formSection: {
@@ -238,9 +256,3 @@ export const ThemedButtonStyles = StyleService.create({
     justifyContent: "center",
   },
 });
-
-// const styles = StyleSheet.create({
-//     verticalAlign: {
-//         al
-//     }
-// })

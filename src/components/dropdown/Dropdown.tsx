@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     marginTop: 48,
     overflow: "hidden",
-    borderRadius: 8,
+    borderRadius: 2,
     backgroundColor: "white",
     zIndex: 50,
     width: "100%",

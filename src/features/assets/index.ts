@@ -6,13 +6,13 @@ import {
   IAssetStatus,
   IAssetFirebaseResponse,
 } from "./types";
-import { useAssetStore } from "./store";
+import { useAssetService } from "./service";
 
 export * from "./hooks";
 
 export {
   AssetCard,
-  useAssetStore,
+  useAssetService,
   IAsset,
   IAssetCondition,
   IAssetRateInterval,

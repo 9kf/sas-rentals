@@ -1,5 +1,7 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import { IAssetFirebaseResponse } from "../features/assets";
+import { IRentalScheduleFirebaseResponse } from "../features/scheduling/types";
+import { TCustomer } from "../features/customers";
 
 export interface IOption {
   id: string;
@@ -31,10 +33,39 @@ export type RootStackParamsList = {
   "rental-form":
     | {
         isEditing?: boolean;
+        rentalDetails?: IRentalScheduleFirebaseResponse;
+        isFromCustomer?: boolean;
+        customerDetails?: TCustomer;
       }
     | undefined;
+  "rental-details": { rentalDetails: IRentalScheduleFirebaseResponse };
   transactions: undefined;
   customers: undefined;
+  "update-payment-status-modal": {
+    currentPaymentStatusId: string;
+    rentalId: string;
+    rentalStatusId: string;
+    assetName: string;
+    assetId: string;
+  };
+  "update-rental-status-modal": {
+    currentRentalStatusId: string;
+    rentalId: string;
+    paymentStatusId: string;
+    assetName: string;
+    assetId: string;
+  };
+  "confirm-delete-modal": {
+    title: string;
+    confirmationMessage: string;
+    onPressDelete: () => void;
+  };
+  "customer-modal":
+    | {
+        isUpdate: boolean;
+        customerDetails: TCustomer;
+      }
+    | undefined;
 };
 
 export type NavigationScreensType = StackNavigationProp<RootStackParamsList>;

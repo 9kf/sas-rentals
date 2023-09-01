@@ -9,11 +9,12 @@ const listTextInputSchema = z.object({
 
 export type ListTextInputSchemaType = z.infer<typeof listTextInputSchema>;
 
-interface IUseListTextInputProps<T> {
-  onAdd?: (values: T[]) => void;
+interface IUseListTextInputProps {
+  onAdd?: (values: string[]) => void;
+  onRemove?: (values: string[]) => void;
 }
 
-export function useListTextInput() {
+export function useListTextInput(props?: IUseListTextInputProps) {
   const {
     control,
     handleSubmit,
@@ -33,13 +34,21 @@ export function useListTextInput() {
   const [values, setValues] = useState<string[]>([]);
 
   const addValue: SubmitHandler<ListTextInputSchemaType> = (data) => {
-    setValues([...values, data.newValue]);
+    const newValues = [...values, data.newValue];
+    setValues(newValues);
+    props?.onAdd?.(newValues);
     setValue("newValue", "");
     trigger("newValue");
   };
 
   function removeValue(index: number) {
-    setValues(values.filter((val, i) => i !== index));
+    const newValues = values.filter((val, i) => i !== index);
+    props?.onRemove?.(newValues);
+    setValues(newValues);
+  }
+
+  function overrideValues(newValues: string[]) {
+    setValues(newValues);
   }
 
   return {
@@ -53,6 +62,7 @@ export function useListTextInput() {
       handleSubmit,
       addValue,
       removeValue,
+      overrideValues,
     },
   };
 }

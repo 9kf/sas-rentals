@@ -11,6 +11,12 @@ import { RootStackParamsList } from "./src/utils/types";
 import AssetDetails from "./src/screens/assets/AssetDetails";
 import { Toast } from "./src/components";
 import RentalForm from "./src/screens/scheduling/RentalForm";
+import UpdatePaymentModal from "./src/screens/modals/UpdatePaymentModal";
+import UpdateRentalModal from "./src/screens/modals/UpdateRentalModal";
+import RentalDetails from "./src/screens/scheduling/RentalDetails";
+import { StyleSheet } from "react-native";
+import ConfirmDeleteModal from "./src/screens/modals/ConfirmDeleteModal";
+import CustomerModal from "./src/screens/modals/CustomerModal";
 
 const MainStack = createStackNavigator<RootStackParamsList>();
 
@@ -34,11 +40,7 @@ export default function App() {
               component={AssetsForm}
               options={({ route }) => ({
                 title: route.params?.isEditing ? "Edit Asset" : "Add Asset",
-                headerStyle: {
-                  elevation: 0,
-                  shadowOpacity: 0,
-                  backgroundColor: "#FFF4E9",
-                },
+                headerStyle: styles.headerStyle,
               })}
             />
             <MainStack.Screen
@@ -46,11 +48,7 @@ export default function App() {
               component={AssetDetails}
               options={{
                 title: "Details",
-                headerStyle: {
-                  elevation: 0,
-                  shadowOpacity: 0,
-                  backgroundColor: "#FFF4E9",
-                },
+                headerStyle: styles.headerStyle,
               }}
             />
             <MainStack.Screen
@@ -60,12 +58,51 @@ export default function App() {
                 title: route.params?.isEditing
                   ? "Edit Rental"
                   : "Schedule Rental",
-                headerStyle: {
-                  elevation: 0,
-                  shadowOpacity: 0,
-                  backgroundColor: "#FFF4E9",
-                },
+                headerStyle: styles.headerStyle,
               })}
+            />
+
+            <MainStack.Screen
+              name={"rental-details"}
+              component={RentalDetails}
+              options={{
+                title: "Rental Details",
+                headerStyle: styles.headerStyle,
+              }}
+            />
+
+            {/* Modals */}
+            <MainStack.Screen
+              name="update-payment-status-modal"
+              component={UpdatePaymentModal}
+              options={{
+                presentation: "transparentModal",
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="update-rental-status-modal"
+              component={UpdateRentalModal}
+              options={{
+                presentation: "transparentModal",
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="confirm-delete-modal"
+              component={ConfirmDeleteModal}
+              options={{
+                presentation: "transparentModal",
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="customer-modal"
+              component={CustomerModal}
+              options={{
+                presentation: "transparentModal",
+                headerShown: false,
+              }}
             />
           </MainStack.Navigator>
         </NavigationContainer>
@@ -75,3 +112,11 @@ export default function App() {
     </ApplicationProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  headerStyle: {
+    elevation: 0,
+    shadowOpacity: 0,
+    backgroundColor: "#FFF4E9",
+  },
+});

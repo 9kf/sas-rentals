@@ -26,10 +26,11 @@ export interface IListKeyValueProps {
   addValue: SubmitHandler<ListKeyValueSchemaType>;
   handleSubmit: UseFormHandleSubmit<ListKeyValueSchemaType, undefined>;
   removeValue: (index: number) => void;
+  emptyPlaceholder?: string;
 }
 
 const ADD_BUTTON_WIDTH_HEIGHT = 32;
-const REMOVE_BUTTON_WIDTH_HEIGHT = 24;
+const REMOVE_BUTTON_WIDTH_HEIGHT = 30;
 
 export default function ListKeyValue({
   namePlaceholder,
@@ -42,39 +43,67 @@ export default function ListKeyValue({
   addValue,
   handleSubmit,
   removeValue,
+  emptyPlaceholder,
 }: IListKeyValueProps) {
-  const { buttonStyles, inputStyles, textStyles } = useTheme();
+  const { buttonStyles, inputStyles, textStyles, containerStyles } = useTheme();
 
   return (
     <View style={{ gap: 6 }}>
-      {values.map((val, index) => (
-        <View
-          key={index}
-          style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-        >
-          <TouchableNativeFeedback
-            style={styles.btnContainer}
-            onPress={() => removeValue(index)}
-          >
+      {values.length > 0 ? (
+        values.map((val, index) => (
+          <View key={index} style={containerStyles.itemContainer}>
+            <TouchableNativeFeedback
+              style={styles.btnContainer}
+              onPress={() => removeValue(index)}
+            >
+              <View
+                style={{
+                  ...buttonStyles.fab,
+                  backgroundColor: "red",
+                  marginLeft: 4,
+                  marginRight: 8,
+                  width: REMOVE_BUTTON_WIDTH_HEIGHT,
+                  height: REMOVE_BUTTON_WIDTH_HEIGHT,
+                }}
+              >
+                <MaterialCommunityIcon name="minus" color="white" size={8} />
+              </View>
+            </TouchableNativeFeedback>
             <View
               style={{
-                ...buttonStyles.fab,
-                backgroundColor: "red",
-                padding: 4,
-                width: REMOVE_BUTTON_WIDTH_HEIGHT,
-                height: REMOVE_BUTTON_WIDTH_HEIGHT,
+                flexDirection: "row",
+                marginTop: 2,
+                borderBottomWidth: 1,
               }}
             >
-              <MaterialCommunityIcon name="minus" color="white" size={12} />
+              <Text style={textStyles.normalText}>{val.name}: </Text>
+              <Text style={textStyles.normalText}>{val.value}</Text>
             </View>
-          </TouchableNativeFeedback>
-          <View style={{ flexDirection: "row", marginTop: 2 }}>
-            <Text style={textStyles.normalText}>{val.name}:</Text>
-            <Text style={textStyles.normalText}>{val.value}</Text>
           </View>
+        ))
+      ) : (
+        <View>
+          <Text>{emptyPlaceholder ? emptyPlaceholder : "No Items"}</Text>
         </View>
-      ))}
+      )}
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+        <TouchableNativeFeedback
+          style={styles.btnContainer}
+          onPress={handleSubmit(addValue)}
+          disabled={!isValid}
+        >
+          <View
+            style={{
+              ...buttonStyles.fab,
+              ...(!isValid && { backgroundColor: "lightgray" }),
+              marginHorizontal: 4,
+              width: ADD_BUTTON_WIDTH_HEIGHT,
+              height: ADD_BUTTON_WIDTH_HEIGHT,
+            }}
+          >
+            <MaterialCommunityIcon name="plus" color="white" size={16} />
+          </View>
+        </TouchableNativeFeedback>
         <TextInput
           style={{ ...inputStyles.textInput, flexBasis: "52%" }}
           value={name.value}
@@ -89,22 +118,6 @@ export default function ListKeyValue({
           inputMode="numeric"
           placeholder={valuePlaceholder || ""}
         />
-        <TouchableNativeFeedback
-          style={styles.btnContainer}
-          onPress={handleSubmit(addValue)}
-          disabled={!isValid}
-        >
-          <View
-            style={{
-              ...buttonStyles.fab,
-              ...(!isValid && { backgroundColor: "lightgray" }),
-              width: ADD_BUTTON_WIDTH_HEIGHT,
-              height: ADD_BUTTON_WIDTH_HEIGHT,
-            }}
-          >
-            <MaterialCommunityIcon name="plus" color="white" size={16} />
-          </View>
-        </TouchableNativeFeedback>
       </View>
     </View>
   );

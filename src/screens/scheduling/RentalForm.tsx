@@ -4,25 +4,38 @@ import {
   StyleSheet,
   TextInput,
   TouchableNativeFeedback,
+  Keyboard,
 } from "react-native";
-import useTheme from "../../theme/useTheme";
+import { useEffect } from "react";
 import { ScrollView } from "react-native-gesture-handler";
+import { CheckBox, Spinner } from "@ui-kitten/components";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+import useTheme from "../../theme/useTheme";
 import { useRentalForm } from "../../features/scheduling";
-import { Dropdown, useDropdown } from "../../components";
-import { useRangeDatePicker } from "../../utils/hooks";
-import { RangeDatepicker, Spinner } from "@ui-kitten/components";
+import {
+  AutoComplete,
+  DatePickerWrapper,
+  Dropdown,
+  useAutoComplete,
+  useDatePicker,
+  useDropdown,
+} from "../../components";
 import ListTextInput, {
   useListTextInput,
 } from "../../components/list-textinput";
 import ListKeyValue, { useListKeyValue } from "../../components/list-key-value";
 import { RATE_INTERVAL_OPTIONS } from "../../utils/contstants";
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamsList } from "../../utils/types";
 
-export default function RentalForm() {
-  const { buttonStyles, containerStyles, inputStyles, textStyles } = useTheme();
+export interface IRentalFormProps {
+  route: RouteProp<RootStackParamsList, "rental-form">;
+  navigation: StackNavigationProp<RootStackParamsList, "rental-form">;
+}
 
-  const route = useRoute<RouteProp<RootStackParamsList, "rental-form">>();
+export default function RentalForm({ route }: IRentalFormProps) {
+  const { buttonStyles, containerStyles, inputStyles, textStyles } = useTheme();
 
   const {
     states: {
@@ -30,44 +43,133 @@ export default function RentalForm() {
       address,
       assetId,
       comments,
-      contactNumbers,
       customerName,
-      dateRange,
-      expenses,
-      mobilizationFee,
       rateInterval,
+      includeSundays,
+      dailyRate,
+      weeklyRate,
+      monthlyRate,
+      yearlyRate,
+      mobilizationFee,
       safetyDeposit,
-      standardRate,
       errors,
       isSubmitting,
+      customerList,
+      startDate,
+      endDate,
     },
-    functions: { handleSubmit, setRental, onAssetSelect, onRateIntervalSelect },
+    functions: {
+      handleSubmit,
+      setRental,
+      onAssetSelect,
+      onRateIntervalSelect,
+      onAddContactNumber,
+      onRemoveContactNumber,
+      onAddExpenses,
+      onRemoveExpenses,
+      onChangeStartDate,
+      onChangeEndDate,
+      onToggleIncludeSundays,
+      onSelectCustomerOption,
+      preloadFields,
+      preloadCustomerFields,
+    },
   } = useRentalForm();
 
-  const { getSelectedOption: getSelectedCondition, ...dropdownConditionProps } =
-    useDropdown({
-      options: assetList,
-      onSelectCallback: onAssetSelect,
-      defaultSelectedValue: assetId?.value,
-    });
-
   const {
-    getSelectedOption: getSelectedRateInterval,
-    ...dropdownRateIntervalProps
+    getSelectedOption: getSelectedStandardRateInterval,
+    onSelect: onSelectStandardRate,
+    ...dropdownStandardRateIntervalProps
   } = useDropdown({
     options: RATE_INTERVAL_OPTIONS,
     onSelectCallback: onRateIntervalSelect,
-    defaultSelectedValue: rateInterval.value,
+    defaultSelectedValue: rateInterval?.value,
   });
 
-  const listTextInputProps = useListTextInput();
-  const listKeyValueProps = useListKeyValue();
+  const { getSelectedOption: getSelectedAsset, ...dropdownSelectedAssetProps } =
+    useDropdown({
+      options: assetList,
+      onSelectCallback: (optionId: string) => {
+        onAssetSelect(optionId, onSelectStandardRate);
+      },
+      defaultSelectedValue:
+        assetId?.value || route.params?.rentalDetails?.asset.id,
+    });
 
-  const { states, functions } = useRangeDatePicker();
+  const listTextInputProps = useListTextInput({
+    onAdd: onAddContactNumber,
+    onRemove: onRemoveContactNumber,
+  });
+  const listKeyValueProps = useListKeyValue({
+    onAdd: onAddExpenses,
+    onRemove: onRemoveExpenses,
+  });
+
+  const { ...autoCompleteProps } = useAutoComplete({
+    options: customerList.map((customer) => ({
+      id: customer.id || "",
+      name: customer.name,
+      contactNumbers: customer.contactNumbers,
+    })),
+    onSelectCallback: (optionId: string) => {
+      Keyboard.dismiss();
+      const customer = customerList.find(
+        (customer) => customer.id === optionId
+      );
+      if (customer) {
+        onSelectCustomerOption(customer);
+        listTextInputProps.functions.overrideValues(customer.contactNumbers);
+      }
+    },
+  });
+
+  const { date: formStartDate, ...startDatePickerProps } = useDatePicker({
+    defaultDate: route.params?.rentalDetails?.startDate
+      ? new Date(route.params?.rentalDetails?.startDate.toDate())
+      : new Date(),
+    onConfirmCallback: (date) => onChangeStartDate(date),
+  });
+  const { date: formEndDate, ...endDatePickerProps } = useDatePicker({
+    defaultDate: route.params?.rentalDetails?.endDate
+      ? new Date(route.params?.rentalDetails?.endDate.toDate())
+      : new Date(),
+    onConfirmCallback: (date) => onChangeEndDate(date),
+  });
+
+  useEffect(() => {
+    if (route.params?.isEditing && route.params.rentalDetails) {
+      preloadFields(route.params.rentalDetails);
+      onSelectStandardRate(route.params.rentalDetails.rateInterval);
+
+      if (route.params.rentalDetails.customer.contactNumbers.length > 0) {
+        listTextInputProps.functions.overrideValues(
+          route.params.rentalDetails.customer.contactNumbers
+        );
+      }
+
+      if (route.params.rentalDetails.expenses.length > 0) {
+        listKeyValueProps.functions.overrideValues(
+          route.params.rentalDetails.expenses
+        );
+      }
+    }
+
+    if (route.params?.isFromCustomer && route.params.customerDetails) {
+      preloadCustomerFields(route.params.customerDetails);
+      if (route.params.customerDetails.contactNumbers.length > 0) {
+        listTextInputProps.functions.overrideValues(
+          route.params.customerDetails.contactNumbers
+        );
+      }
+    }
+  }, []);
 
   return (
     <View style={containerStyles.defaultPageStyle}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Asset */}
         <View style={{ flexDirection: "row" }}>
           <Text style={textStyles.fieldLabel}>Asset </Text>
@@ -75,40 +177,66 @@ export default function RentalForm() {
         </View>
         <View style={{ ...styles.inputContainer, zIndex: 10 }}>
           <Dropdown
-            {...dropdownConditionProps}
-            getSelectedOption={getSelectedCondition}
+            {...dropdownSelectedAssetProps}
+            getSelectedOption={getSelectedAsset}
           />
           {errors.assetId && (
             <Text style={textStyles.fieldError}>{errors.assetId.message}</Text>
           )}
         </View>
         {/* Date */}
-        <View style={{ flexDirection: "row" }}>
-          <Text style={textStyles.fieldLabel}>Date </Text>
-          <Text style={textStyles.required}>*</Text>
-        </View>
         <View style={styles.inputContainer}>
-          <RangeDatepicker {...states} {...functions} />
+          <View style={containerStyles.twoColumnRow}>
+            <View style={containerStyles.twoColumnCol}>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={textStyles.fieldLabel}>Start Date</Text>
+                <Text style={textStyles.required}>*</Text>
+              </View>
+              <View style={{ ...inputStyles.textInput, marginTop: 4 }}>
+                <DatePickerWrapper
+                  date={formStartDate}
+                  maximumDate={new Date(endDate.value)}
+                  {...startDatePickerProps}
+                />
+              </View>
+            </View>
+            <View style={containerStyles.twoColumnCol}>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={textStyles.fieldLabel}>End Date</Text>
+                <Text style={textStyles.required}>*</Text>
+              </View>
+              <View style={{ ...inputStyles.textInput, marginTop: 4 }}>
+                <DatePickerWrapper
+                  minimumDate={new Date(startDate.value)}
+                  date={formEndDate}
+                  {...endDatePickerProps}
+                />
+              </View>
+            </View>
+          </View>
+          {(errors.startDate || errors.endDate) && (
+            <Text style={{ ...textStyles.fieldError, marginTop: 4 }}>
+              {errors.startDate?.message || errors.endDate?.message}
+            </Text>
+          )}
         </View>
+
         {/* Customer */}
         <View style={{ flexDirection: "row" }}>
           <Text style={textStyles.fieldLabel}>Customer </Text>
           <Text style={textStyles.required}>*</Text>
         </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={inputStyles.textInput}
+        <View style={{ ...styles.inputContainer, zIndex: 9999 }}>
+          <AutoComplete
+            {...autoCompleteProps}
             value={customerName.value}
             onChangeText={customerName.onChange}
           />
-        </View>
-        {/* Contact number(s) */}
-        <Text style={textStyles.fieldLabel}>Contact number(s) </Text>
-        <View style={styles.inputContainer}>
-          <ListTextInput
-            {...listTextInputProps.states}
-            {...listTextInputProps.functions}
-          />
+          {errors.customerName && (
+            <Text style={textStyles.fieldError}>
+              {errors.customerName.message}
+            </Text>
+          )}
         </View>
         {/* Address */}
         <View style={{ flexDirection: "row" }}>
@@ -121,41 +249,155 @@ export default function RentalForm() {
             value={address.value}
             onChangeText={address.onChange}
           />
+          {errors.address && (
+            <Text style={textStyles.fieldError}>{errors.address.message}</Text>
+          )}
         </View>
-        {/* standard rate and rate interval */}
-        <View
-          style={{ ...(containerStyles.twoColumnRow as object), zIndex: 10 }}
+        {/* Contact number(s) */}
+        <Text style={textStyles.fieldLabel}>Contact number(s) </Text>
+        <View style={styles.inputContainer}>
+          <ListTextInput
+            {...listTextInputProps.states}
+            {...listTextInputProps.functions}
+            inputMode="numeric"
+            emptyPlaceholder="No numbers added"
+          />
+        </View>
+
+        {/* rates */}
+        <Text
+          style={{ ...textStyles.formSection, marginTop: 8, marginBottom: 16 }}
         >
-          <View style={containerStyles.twoColumnCol}>
+          Rates
+        </Text>
+
+        {/* Rate Interval */}
+        <View style={containerStyles.twoColumnCol}>
+          <Text style={textStyles.fieldLabel}>Standard Rate Interval</Text>
+          <View style={styles.inputContainer}>
+            <Dropdown
+              {...dropdownStandardRateIntervalProps}
+              onSelect={onSelectStandardRate}
+              getSelectedOption={getSelectedStandardRateInterval}
+              // optionsContainerMaxHeight={100}
+            />
+          </View>
+        </View>
+
+        {/* Daily rate */}
+        <View style={{ flexDirection: "row" }}>
+          <Text style={textStyles.fieldLabel}>Daily Rate </Text>
+          <Text style={textStyles.required}>*</Text>
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={inputStyles.textInput}
+            value={dailyRate.value}
+            placeholder="0 Php"
+            inputMode="numeric"
+            onChangeText={dailyRate.onChange}
+          />
+          {errors.dailyRate && (
+            <Text style={textStyles.fieldError}>
+              {errors.dailyRate.message}
+            </Text>
+          )}
+        </View>
+
+        {/* Weekly rate */}
+        {rateInterval.value === "2" && (
+          <>
             <View style={{ flexDirection: "row" }}>
-              <Text style={textStyles.fieldLabel}>Standard Rate </Text>
+              <Text style={textStyles.fieldLabel}>Weekly Rate </Text>
               <Text style={textStyles.required}>*</Text>
             </View>
             <View style={styles.inputContainer}>
               <TextInput
                 style={inputStyles.textInput}
-                keyboardType="number-pad"
-                value={standardRate.value}
-                onChangeText={standardRate.onChange}
+                value={weeklyRate.value || ""}
+                placeholder="0 Php"
+                inputMode="numeric"
+                onChangeText={weeklyRate.onChange}
               />
-              {errors.standardRate && (
+              {errors.weeklyRate && (
                 <Text style={textStyles.fieldError}>
-                  {errors.standardRate.message}
+                  {errors.weeklyRate.message}
                 </Text>
               )}
             </View>
-          </View>
-          <View style={containerStyles.twoColumnCol}>
-            <Text style={textStyles.fieldLabel}>Rate Interval </Text>
-            <View style={styles.inputContainer}>
-              <Dropdown
-                {...dropdownRateIntervalProps}
-                getSelectedOption={getSelectedRateInterval}
-                optionsContainerMaxHeight={100}
-              />
+          </>
+        )}
+
+        {/* Monthly Rate */}
+        {rateInterval.value === "3" && (
+          <>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={textStyles.fieldLabel}>Monthly Rate </Text>
+              <Text style={textStyles.required}>*</Text>
             </View>
-          </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={inputStyles.textInput}
+                value={monthlyRate.value || ""}
+                placeholder="0 Php"
+                inputMode="numeric"
+                onChangeText={monthlyRate.onChange}
+              />
+              {errors.monthlyRate && (
+                <Text style={textStyles.fieldError}>
+                  {errors.monthlyRate.message}
+                </Text>
+              )}
+            </View>
+          </>
+        )}
+
+        {/* Yearly Rate */}
+        {rateInterval.value === "4" && (
+          <>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={textStyles.fieldLabel}>Yearly Rate </Text>
+              <Text style={textStyles.required}>*</Text>
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={inputStyles.textInput}
+                value={yearlyRate.value || ""}
+                placeholder="0 Php"
+                inputMode="numeric"
+                onChangeText={yearlyRate.onChange}
+              />
+              {errors.yearlyRate && (
+                <Text style={textStyles.fieldError}>
+                  {errors.yearlyRate.message}
+                </Text>
+              )}
+            </View>
+          </>
+        )}
+
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <CheckBox
+            status="warning"
+            checked={includeSundays.value}
+            onChange={(checked) => onToggleIncludeSundays(checked)}
+          />
+          <Text
+            style={{
+              ...textStyles.normalTextSmall,
+              marginTop: 3,
+              marginLeft: 4,
+            }}
+          >
+            Include Sundays?
+          </Text>
         </View>
+
+        {/* others */}
+        <Text style={{ ...textStyles.formSection, marginVertical: 16 }}>
+          Others
+        </Text>
+
         {/* mobilization fee and safety deposit */}
         <View style={containerStyles.twoColumnRow}>
           <View style={containerStyles.twoColumnCol}>
@@ -181,11 +423,6 @@ export default function RentalForm() {
             </View>
           </View>
         </View>
-        {/* other */}
-
-        <Text style={{ ...textStyles.formSection, marginVertical: 16 }}>
-          Other
-        </Text>
 
         {/* expenses */}
         <Text style={textStyles.fieldLabel}>Expenses</Text>
@@ -193,6 +430,7 @@ export default function RentalForm() {
           <ListKeyValue
             namePlaceholder="Name"
             valuePlaceholder="Amount"
+            emptyPlaceholder="No expenses added"
             {...listKeyValueProps.states}
             {...listKeyValueProps.functions}
           />
@@ -211,13 +449,7 @@ export default function RentalForm() {
         </View>
       </ScrollView>
       <TouchableNativeFeedback
-        onPress={
-          route.params?.isEditing
-            ? handleSubmit((data) => {
-                // updateAsset(data, route.params?.assetDetails?.id || "")
-              })
-            : handleSubmit(setRental)
-        }
+        onPress={handleSubmit(setRental)}
         disabled={isSubmitting}
       >
         <View
@@ -230,7 +462,7 @@ export default function RentalForm() {
             <Spinner style={styles.spinnerStyle} />
           ) : (
             <Text style={{ ...(textStyles.buttonText as object) }}>
-              Set rental
+              {route.params?.isEditing ? "Update Rental" : "Set Rental"}
             </Text>
           )}
         </View>
@@ -241,6 +473,7 @@ export default function RentalForm() {
 
 const styles = StyleSheet.create({
   inputContainer: {
+    zIndex: 1,
     marginTop: 4,
     marginBottom: 16,
   },
