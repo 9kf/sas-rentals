@@ -66,6 +66,7 @@ export type RootStackParamsList = {
         customerDetails: TCustomer;
       }
     | undefined;
+  "repeat-rental-modal": { rentalDetails: IRentalScheduleFirebaseResponse };
 };
 
 export type NavigationScreensType = StackNavigationProp<RootStackParamsList>;

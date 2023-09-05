@@ -54,6 +54,11 @@ export default function RentalDetails({
       headerRight: () => {
         return (
           <HeaderActions
+            onPressRepeat={() =>
+              navigation.push("repeat-rental-modal", {
+                rentalDetails: route.params.rentalDetails,
+              })
+            }
             onPressEdit={() =>
               navigation.push("rental-form", {
                 isEditing: true,

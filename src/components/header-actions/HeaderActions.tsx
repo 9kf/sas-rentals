@@ -30,7 +30,7 @@ export function HeaderActions({
       )}
       {onPressRepeat && (
         <TouchableOpacity onPress={onPressRepeat}>
-          <MaterialDesignIcons name="repeat" color={"#EC9110"} size={20} />
+          <MaterialDesignIcons name="repeat" color={"green"} size={20} />
         </TouchableOpacity>
       )}
     </View>
