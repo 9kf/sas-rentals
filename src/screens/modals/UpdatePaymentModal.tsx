@@ -58,7 +58,7 @@ export default function UpdatePaymentModal({
           message: "Rental has been updated.",
           type: "success",
         });
-        if (paymentId === "3" && rentalStatusId === "3") {
+        if (paymentId === "3") {
           updateOverallProfit(assetId);
         }
       },

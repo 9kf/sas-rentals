@@ -1,12 +1,13 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import MaterialDesignIcons from "@expo/vector-icons/MaterialCommunityIcons";
+
 import Scheduling from "../../screens/scheduling/Scheduling";
 import Transactions from "../../screens/transactions/Transactions";
 import Customers from "../../screens/customers/Customers";
-import MaterialDesignIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Assets from "../../screens/assets/Assets";
-import routes from "../../utils/routes";
+import { RootStackParamsList } from "../../utils/types";
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackParamsList>();
 
 export function BottomTabs() {
   return (
@@ -25,7 +26,7 @@ export function BottomTabs() {
       })}
     >
       <Tab.Screen
-        name={routes.assets}
+        name={"assets"}
         options={{
           title: "Assets",
           tabBarIcon: ({ color, size }) => (
@@ -39,7 +40,7 @@ export function BottomTabs() {
         component={Assets}
       />
       <Tab.Screen
-        name={routes.schedules}
+        name={"schedules"}
         options={{
           title: "Schedule",
           tabBarIcon: ({ color, size }) => (
@@ -53,7 +54,7 @@ export function BottomTabs() {
         component={Scheduling}
       />
       <Tab.Screen
-        name={routes.transactions}
+        name={"transactions"}
         options={{
           title: "Transactions",
           tabBarIcon: ({ color, size }) => (
@@ -67,7 +68,7 @@ export function BottomTabs() {
         component={Transactions}
       />
       <Tab.Screen
-        name={routes.customers}
+        name={"customers"}
         options={{
           title: "Customers",
           tabBarIcon: ({ color, size }) => (

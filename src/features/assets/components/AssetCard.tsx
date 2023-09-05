@@ -43,7 +43,7 @@ export default function AssetCard(props: IAssetCardProps) {
           backgroundColor: "white",
         }}
       >
-        <AssetCardRibbon {...assetStatus} />
+        {/* <AssetCardRibbon {...assetStatus} /> */}
         <View style={styles.innerContainer}>
           <View style={styles.imageContainer}>
             <Image

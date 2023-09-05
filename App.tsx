@@ -17,6 +17,7 @@ import RentalDetails from "./src/screens/scheduling/RentalDetails";
 import { StyleSheet } from "react-native";
 import ConfirmDeleteModal from "./src/screens/modals/ConfirmDeleteModal";
 import CustomerModal from "./src/screens/modals/CustomerModal";
+import RepeatRentalModal from "./src/screens/modals/RepeatRentalModal";
 
 const MainStack = createStackNavigator<RootStackParamsList>();
 
@@ -99,6 +100,15 @@ export default function App() {
             <MainStack.Screen
               name="customer-modal"
               component={CustomerModal}
+              options={{
+                presentation: "transparentModal",
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="repeat-rental-modal"
+              component={RepeatRentalModal}
               options={{
                 presentation: "transparentModal",
                 headerShown: false,

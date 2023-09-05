@@ -203,6 +203,26 @@ export function useRentalSchedulingService() {
     }
   }
 
+  async function repeatRental(
+    data: IRentalScheduleFirebaseResponse,
+    onSuccessCallback?: () => void,
+    onErrorCallback?: (error: any) => void
+  ) {
+    try {
+      const rentalScheduleDoc = await rentalScheduleDocument.add({
+        ...data,
+        paymentStatus: PAYMENT_STATUS_OPTIONS[0],
+        rentalStatus: RENTAL_STATUS_OPTIONS[0],
+        createdDate: firestore.FieldValue.serverTimestamp(),
+        modifiedDate: firestore.FieldValue.serverTimestamp(),
+      });
+
+      onSuccessCallback?.();
+    } catch (error) {
+      onErrorCallback?.(error);
+    }
+  }
+
   async function updatePaymentStatus(
     rentalId: string,
     paymentStatusId: string,
@@ -281,6 +301,7 @@ export function useRentalSchedulingService() {
   return {
     rentalScheduleDocument,
     scheduleRental,
+    repeatRental,
     updatePaymentStatus,
     updateRentalStatus,
     deleteRental,

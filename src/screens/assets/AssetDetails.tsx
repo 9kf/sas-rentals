@@ -230,7 +230,7 @@ export default function AssetDetails({
         <Text style={textStyles.formSection}>Recent Rentals: </Text>
       </View>
 
-      <View style={{ marginTop: 8 }}>
+      <View style={{ marginTop: 8, marginBottom: 16 }}>
         {rentals.map((rental) => (
           <RentalCard
             key={rental.id}
