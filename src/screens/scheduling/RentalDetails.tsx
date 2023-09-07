@@ -12,6 +12,7 @@ import { IAssetFirebaseResponse, useAssetService } from "../../features/assets";
 import { IMAGE_PLACEHOLDER } from "../../utils/contstants";
 import { HeaderActions, useToast } from "../../components";
 import { useRentalSchedulingService } from "../../features/scheduling/service";
+import { useNotificationService } from "../../features/notifications";
 
 export interface IRentalDetailsProps {
   route: RouteProp<RootStackParamsList, "rental-details">;
@@ -30,6 +31,7 @@ export default function RentalDetails({
   const { getAssetById, getAssetConditionById, getAssetRateIntervalById } =
     useAssetService();
   const { deleteRental } = useRentalSchedulingService();
+  const { removeNotification } = useNotificationService();
   const showToast = useToast((state) => state.showToast);
 
   const [asset, setAsset] = useState<IAssetFirebaseResponse | undefined>(
@@ -71,8 +73,10 @@ export default function RentalDetails({
                   "Are you sure you want to delete this rental?",
                 title: "Confirmation",
                 onPressDelete: () => {
+                  const { id, asset, startDate, endDate } =
+                    route.params.rentalDetails;
                   deleteRental(
-                    route.params.rentalDetails.id || "",
+                    id || "",
                     () => {
                       showToast({
                         title: "Success",
@@ -80,6 +84,11 @@ export default function RentalDetails({
                         type: "success",
                       });
                       navigation.popToTop();
+                      removeNotification([
+                        `${asset.id}${endDate.toDate().toISOString()}payment`,
+                        `${asset.id}${startDate.toDate().toISOString()}rental`,
+                        `${asset.id}${endDate.toDate().toISOString()}rental`,
+                      ]);
                     },
                     (error) => {
                       showToast({
@@ -87,7 +96,7 @@ export default function RentalDetails({
                         message: error,
                         type: "error",
                       });
-                      navigation.popToTop();
+                      navigation.goBack();
                     }
                   );
                 },

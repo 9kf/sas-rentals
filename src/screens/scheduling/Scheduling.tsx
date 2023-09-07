@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { RefreshControl, Text, View } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -16,17 +16,23 @@ export interface ISchedulingProps {
 export default function Scheduling({ navigation, route }: ISchedulingProps) {
   const { containerStyles, textStyles } = useTheme();
   const {
-    states: { markedDates, rentals },
-    functions: { onMonthChange },
+    states: { markedDates, rentals, currentDate, isRefreshing },
+    functions: { onMonthChange, onRefresh },
   } = useScheduling({ navigation, route });
 
   return (
     <View style={{ ...containerStyles.defaultPageStyle, paddingTop: 0 }}>
-      <ScrollView style={{ height: "100%", paddingBottom: 12 }}>
+      <ScrollView
+        style={{ height: "100%", paddingBottom: 12 }}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
+      >
         <RNCAlendars
           onMonthChange={onMonthChange}
           markingType="multi-period"
           markedDates={markedDates}
+          date={currentDate.toDateString()}
         />
 
         {rentals.length > 0 && (
