@@ -29,7 +29,7 @@ export type RootStackParamsList = {
     | undefined;
   "asset-details": { assetDetails: IAssetFirebaseResponse & { id: string } };
   assets: undefined;
-  schedules: undefined;
+  schedules: { updateRentalList?: boolean } | undefined;
   "rental-form":
     | {
         isEditing?: boolean;

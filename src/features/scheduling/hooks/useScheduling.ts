@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import firestore from "@react-native-firebase/firestore";
 import startOfMonth from "date-fns/startOfMonth";
 import endOfMonth from "date-fns/endOfMonth";
@@ -11,7 +11,6 @@ import { getDatesInRange } from "../helpers";
 import { IRentalScheduleFirebaseResponse } from "../types";
 import { useRentalSchedulingService } from "../service";
 import { ISchedulingProps } from "../../../screens/scheduling/Scheduling";
-import { useFocusEffect } from "@react-navigation/native";
 
 interface IMarkedDates {
   [key: string]: {
@@ -22,10 +21,13 @@ interface IMarkedDates {
 export function useScheduling({ navigation, route }: ISchedulingProps) {
   const { rentalScheduleDocument } = useRentalSchedulingService();
 
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [markedDates, setMarkedDates] = useState<IMarkedDates>({});
   const [rentals, setRentals] = useState<IRentalScheduleFirebaseResponse[]>([]);
 
   const getRentalsForMonth = async (monthDate?: Date) => {
+    setIsRefreshing(true);
     const currentMonth = monthDate ?? new Date();
 
     const start = startOfMonth(subMonths(currentMonth, 1));
@@ -70,25 +72,37 @@ export function useScheduling({ navigation, route }: ISchedulingProps) {
 
     setRentals(rentalsCopy);
     setMarkedDates(markedDatesCopy);
+    setIsRefreshing(false);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      getRentalsForMonth();
-    }, [navigation])
-  );
+  useEffect(() => {
+    if (route.params?.updateRentalList) {
+      getRentalsForMonth(currentDate);
+    }
+  }, [route.params]);
+
+  useEffect(() => {
+    getRentalsForMonth(new Date(currentDate));
+  }, [currentDate]);
 
   const onMonthChange = (date: DateData) => {
-    getRentalsForMonth(new Date(date.year, date.month - 1));
+    setCurrentDate(new Date(date.dateString));
+  };
+
+  const onRefresh = () => {
+    getRentalsForMonth(currentDate);
   };
 
   return {
     states: {
       markedDates,
       rentals,
+      currentDate,
+      isRefreshing,
     },
     functions: {
       onMonthChange,
+      onRefresh,
     },
   };
 }

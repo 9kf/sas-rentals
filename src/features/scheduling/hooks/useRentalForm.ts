@@ -9,6 +9,8 @@ import { SubmitHandler, useController, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ListKeyValueSchemaType } from "../../../components/list-key-value/useListKeyValue";
 import format from "date-fns/format";
+import isAfter from "date-fns/isAfter";
+import isSameDay from "date-fns/isSameDay";
 import { useRentalSchedulingService } from "../service";
 import { useToast } from "../../../components";
 import { useNavigation } from "@react-navigation/native";
@@ -16,6 +18,7 @@ import { NavigationScreensType } from "../../../utils/types";
 import { IRentalScheduleFirebaseResponse } from "../types";
 import { getDatesInRange } from "../helpers";
 import { TCustomer, useCustomerService } from "../../customers";
+import { useNotificationService } from "../../notifications";
 
 const rentalFormSchema = z
   .object({
@@ -221,6 +224,13 @@ export function useRentalForm() {
   const { customerDocument } = useCustomerService();
   const { rentalScheduleDocument, scheduleRental } =
     useRentalSchedulingService();
+  const {
+    scheduleDeliveryNotification,
+    scheduleReturnNotification,
+    schedulePaymentNotification,
+    scheduleLatePaymentNotification,
+    removeNotification,
+  } = useNotificationService();
   const navigation = useNavigation<NavigationScreensType>();
   const showToast = useToast((state) => state.showToast);
 
@@ -368,7 +378,47 @@ export function useRentalForm() {
           type: "success",
         });
         setIsSubmitting(false);
-        navigation.navigate("schedules");
+        navigation.navigate("schedules", { updateRentalList: true });
+
+        if (data.id) {
+          removeNotification([
+            `${data.assetId}${new Date(data.endDate).toISOString()}payment`,
+            `${data.assetId}${new Date(data.startDate).toISOString()}rental`,
+            `${data.assetId}${new Date(data.endDate).toISOString()}rental`,
+          ]);
+        }
+
+        // schedule notifications
+        if (isAfter(new Date(data.startDate), new Date())) {
+          // delivery notification
+          scheduleDeliveryNotification({
+            assetId: data.assetId,
+            assetName: data.assetName || "",
+            customerName: data.customerName,
+            targetDate: new Date(data.startDate),
+          });
+        }
+
+        if (
+          isAfter(new Date(data.startDate), new Date()) &&
+          !isSameDay(new Date(data.startDate), new Date(data.endDate))
+        ) {
+          // return notification
+          scheduleReturnNotification({
+            assetId: data.assetId,
+            assetName: data.assetName || "",
+            customerName: data.customerName,
+            targetDate: new Date(data.endDate),
+          });
+
+          // payment notification
+          schedulePaymentNotification({
+            assetId: data.assetId,
+            assetName: data.assetName || "",
+            customerName: data.customerName,
+            targetDate: new Date(data.endDate),
+          });
+        }
       },
       (error) => {
         showToast({ title: "Error", message: error, type: "error" });
