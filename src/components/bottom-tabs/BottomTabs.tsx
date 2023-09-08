@@ -6,6 +6,7 @@ import Transactions from "../../screens/transactions/Transactions";
 import Customers from "../../screens/customers/Customers";
 import Assets from "../../screens/assets/Assets";
 import { RootStackParamsList } from "../../utils/types";
+import Settings from "../../screens/auth/Settings";
 
 const Tab = createBottomTabNavigator<RootStackParamsList>();
 
@@ -76,6 +77,16 @@ export function BottomTabs() {
           ),
         }}
         component={Customers}
+      />
+      <Tab.Screen
+        name={"settings"}
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialDesignIcons name="cog" color={color} size={size} />
+          ),
+        }}
+        component={Settings}
       />
     </Tab.Navigator>
   );
