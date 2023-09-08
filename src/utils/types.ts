@@ -41,6 +41,7 @@ export type RootStackParamsList = {
   "rental-details": { rentalDetails: IRentalScheduleFirebaseResponse };
   transactions: undefined;
   customers: undefined;
+  settings: undefined;
   "update-payment-status-modal": {
     currentPaymentStatusId: string;
     rentalId: string;
