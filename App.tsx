@@ -24,12 +24,21 @@ import CustomerModal from "./src/screens/modals/CustomerModal";
 import RepeatRentalModal from "./src/screens/modals/RepeatRentalModal";
 import { useAuth } from "./src/features/auth";
 import Auth from "./src/screens/auth/Auth";
+import { setNotificationHandler } from "expo-notifications";
 
 const MainStack = createStackNavigator<RootStackParamsList>();
 
 GoogleSignin.configure({
   webClientId:
     "200281219925-nk6umapdca4bbl1jg84ke1difrhq6798.apps.googleusercontent.com",
+});
+
+setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
 });
 
 export default function App() {

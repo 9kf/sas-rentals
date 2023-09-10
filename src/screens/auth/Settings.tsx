@@ -34,8 +34,8 @@ export default function Settings() {
             {user?.displayName
               ?.split(" ")
               .map((name) => name[0])
-              .join(" ")
-              .replaceAll(" ", "")}
+              .join()
+              .replaceAll(",", "")}
           </Text>
         </View>
         <View>

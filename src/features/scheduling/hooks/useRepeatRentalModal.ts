@@ -2,13 +2,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import firestore from "@react-native-firebase/firestore";
 import format from "date-fns/format";
 import { SubmitHandler, useController, useForm } from "react-hook-form";
+import isAfter from "date-fns/isAfter";
+import isSameDay from "date-fns/isSameDay";
 import { z } from "zod";
+import { useState } from "react";
+
 import { useRentalSchedulingService } from "../service";
 import { IRentalScheduleFirebaseResponse } from "../types";
 import { getDatesInRange } from "../helpers";
 import { IRepeatRentalModalProps } from "../../../screens/modals/RepeatRentalModal";
-import { useState } from "react";
 import { useToast } from "../../../components";
+import { useNotificationService } from "../../notifications";
 
 const repeatRentalFormSchema = z.object({
   startDate: z.string().min(1, { message: "Field is requried" }),
@@ -50,8 +54,13 @@ export function useRepeatRentalModal({
     name: "endDate",
   });
 
-  const { rentalScheduleDocument, scheduleRental, repeatRental } =
-    useRentalSchedulingService();
+  const { rentalScheduleDocument, repeatRental } = useRentalSchedulingService();
+  const {
+    scheduleDeliveryNotification,
+    scheduleReturnNotification,
+    schedulePaymentNotification,
+    scheduleLatePaymentNotification,
+  } = useNotificationService();
 
   const showToast = useToast((state) => state.showToast);
 
@@ -125,6 +134,37 @@ export function useRepeatRentalModal({
         });
         setIsSubmitting(false);
         navigation.navigate("schedules");
+
+        if (isAfter(new Date(data.startDate), new Date())) {
+          // delivery notification
+          scheduleDeliveryNotification({
+            assetId: rentalDetails.asset.id,
+            assetName: rentalDetails.asset.name,
+            customerName: rentalDetails.customer.name,
+            targetDate: new Date(data.startDate),
+          });
+        }
+
+        if (
+          isAfter(new Date(data.endDate), new Date()) &&
+          !isSameDay(new Date(data.startDate), new Date(data.endDate))
+        ) {
+          // return notification
+          scheduleReturnNotification({
+            assetId: rentalDetails.asset.id,
+            assetName: rentalDetails.asset.name,
+            customerName: rentalDetails.customer.name,
+            targetDate: new Date(data.endDate),
+          });
+
+          // payment notification
+          schedulePaymentNotification({
+            assetId: rentalDetails.asset.id,
+            assetName: rentalDetails.asset.name,
+            customerName: rentalDetails.customer.name,
+            targetDate: new Date(data.endDate),
+          });
+        }
       },
       (error) => {
         showToast({ title: "Error", message: error, type: "error" });

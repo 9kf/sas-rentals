@@ -2,6 +2,7 @@
   "expo": {
     "name": "sas-rentals",
     "slug": "sas-rentals",
+    "displayName": "SAS construction",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +29,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "notification": {
+      "icon": "./assets/ic_notification.png",
+      "color": "#EC9110",
+      "iosDisplayInForeground": true
+    },
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
@@ -44,6 +50,13 @@
           "ios": {
             "useFrameworks": "static"
           }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/ic_notification.png",
+          "color": "#EC9110"
         }
       ]
     ]

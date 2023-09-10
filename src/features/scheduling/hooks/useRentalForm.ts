@@ -400,7 +400,7 @@ export function useRentalForm() {
         }
 
         if (
-          isAfter(new Date(data.startDate), new Date()) &&
+          isAfter(new Date(data.endDate), new Date()) &&
           !isSameDay(new Date(data.startDate), new Date(data.endDate))
         ) {
           // return notification

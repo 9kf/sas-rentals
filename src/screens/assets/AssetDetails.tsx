@@ -1,13 +1,5 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableNativeFeedback,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
 import { RouteProp } from "@react-navigation/native";
-import { Modal } from "@ui-kitten/components";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 import useTheme from "../../theme/useTheme";
@@ -63,7 +55,7 @@ export default function AssetDetails({
           onPressEdit={() =>
             navigateToEditAssetForm(
               ({
-                ...assetDetails,
+                ...route.params.assetDetails,
                 id: route.params?.assetDetails?.id,
               } as any) || route.params?.assetDetails
             )
@@ -87,15 +79,34 @@ export default function AssetDetails({
     <ScrollView style={containerStyles.defaultPageStyle}>
       <View style={styles.innerContainer}>
         <View style={styles.imageContainer}>
-          <Image
-            resizeMethod="scale"
-            resizeMode="cover"
-            source={{
-              uri: assetDetails?.photoUrl || IMAGE_PLACEHOLDER,
-              height: 100,
-              width: 180,
-            }}
-          />
+          {assetDetails?.photoUrl ? (
+            <Image
+              resizeMethod="scale"
+              resizeMode="cover"
+              source={{
+                uri: assetDetails?.photoUrl || IMAGE_PLACEHOLDER,
+                height: 100,
+                width: 180,
+              }}
+            />
+          ) : (
+            <View
+              style={{
+                ...containerStyles.centerAll,
+                height: 100,
+                width: 180,
+                backgroundColor: route.params.assetDetails.color,
+              }}
+            >
+              <Text style={{ ...textStyles.buttonText }}>
+                {route.params.assetDetails.name
+                  .split(" ")
+                  .map((name) => name[0])
+                  .join()
+                  .replaceAll(",", "")}
+              </Text>
+            </View>
+          )}
         </View>
         <View style={styles.infoContainer}>
           <Text
