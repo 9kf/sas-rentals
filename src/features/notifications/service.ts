@@ -33,6 +33,7 @@ export function useNotificationService() {
       content: {
         title: `Rental for ${assetName} today!`,
         body: `${customerName} scheduled a rental for a ${assetName} today. Deliver the asset and set the status to delivered on the app.`,
+        autoDismiss: true,
       },
       identifier: `${assetId}${targetDate.toISOString()}rental`,
       trigger: {
@@ -59,6 +60,7 @@ export function useNotificationService() {
       content: {
         title: `Retrieval notice for ${assetName} today!`,
         body: `${customerName}\`s rental for a ${assetName} ends today. Retrieve the asset and set the status to returned on the app.`,
+        autoDismiss: true,
       },
       identifier: `${assetId}${targetDate.toISOString()}rental`,
       trigger: {
@@ -85,6 +87,7 @@ export function useNotificationService() {
       content: {
         title: `Payment notice for ${assetName} today!`,
         body: `${customerName}\`s rental for a ${assetName} ends today. Remind them of the payment due for the rental and set the payment status to paid in the app.`,
+        autoDismiss: true,
       },
       identifier: `${assetId}${targetDate.toISOString()}payment`,
       trigger: {
@@ -111,6 +114,7 @@ export function useNotificationService() {
       content: {
         title: `Late payment notice for ${assetName}.`,
         body: `${customerName}\`s rental for a ${assetName} ended a week ago and still hasn't paid. Remind them of the payment due for the rental and set the payment status to paid in the app.`,
+        autoDismiss: true,
       },
       identifier: `${assetId}${targetDate.toISOString()}payment`,
       trigger: {

@@ -46,15 +46,34 @@ export default function AssetCard(props: IAssetCardProps) {
         {/* <AssetCardRibbon {...assetStatus} /> */}
         <View style={styles.innerContainer}>
           <View style={styles.imageContainer}>
-            <Image
-              resizeMethod="scale"
-              resizeMode="cover"
-              source={{
-                uri: photoUrl || IMAGE_PLACEHOLDER,
-                height: 100,
-                width: 140,
-              }}
-            />
+            {photoUrl ? (
+              <Image
+                resizeMethod="scale"
+                resizeMode="cover"
+                source={{
+                  uri: photoUrl || IMAGE_PLACEHOLDER,
+                  height: 100,
+                  width: 140,
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  ...containerStyles.centerAll,
+                  height: 100,
+                  width: 140,
+                  backgroundColor: color,
+                }}
+              >
+                <Text style={{ ...textStyles.buttonText }}>
+                  {name
+                    .split(" ")
+                    .map((name) => name[0])
+                    .join()
+                    .replaceAll(",", "")}
+                </Text>
+              </View>
+            )}
           </View>
           <View style={styles.infoContainer}>
             <View
