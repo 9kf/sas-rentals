@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
+apply plugin: 'com.google.firebase.appdistribution'
 
 import com.android.build.OutputFile
 
@@ -131,6 +132,12 @@ android {
         }
     }
     signingConfigs {
+        release {
+            storeFile file('sasrentals.keystore')
+            storePassword '5132468547a'
+            keyAlias 'your_key_alias'
+            keyPassword '5132468547a'
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'

@@ -1932,6 +1932,11 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
+"@react-native-firebase/app-distribution@^18.3.2":
+  version "18.3.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app-distribution/-/app-distribution-18.3.2.tgz#0cf8b83d08888e483912a687fa43217fa77efbfe"
+  integrity sha512-dxK/fRMa7gab50BQ6CeNLT9QvmZn8PH6F0MBd1Dtt8EWsq9gSLHjz3PtOzR12Z2gsVdcWpmMWNpuB4/yvl8yJg==
+
 "@react-native-firebase/app@^18.0.0":
   version "18.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-18.0.0.tgz#10036e5a480b1143bd88a50643f14ba0e9c62f82"

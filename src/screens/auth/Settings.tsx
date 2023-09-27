@@ -32,10 +32,16 @@ export default function Settings() {
             }}
           >
             {user?.displayName
-              ?.split(" ")
-              .map((name) => name[0])
-              .join()
-              .replaceAll(",", "")}
+              ? user?.displayName
+                  ?.split(" ")
+                  .map((name) => name[0])
+                  .join()
+                  .replaceAll(",", "")
+              : user?.email
+                  ?.split("@")
+                  .map((name) => name[0])
+                  .join()
+                  .replaceAll(",", "")}
           </Text>
         </View>
         <View>

@@ -11,6 +11,7 @@ npm-debug.*
 web-build/
 google-services.json
 GoogleService-Info.plist
+*.keystore
 
 # macOS
 .DS_Store

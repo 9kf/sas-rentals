@@ -6,6 +6,14 @@ interface IAuthState {
   user: FirebaseAuthTypes.User | null;
   onAuthStateChanged: (user: FirebaseAuthTypes.User | null) => void;
   onGoogleLinkButtonPress: () => void;
+  registerWithEmailAndPassword: (
+    username: string,
+    password: string
+  ) => Promise<string>;
+  signinWithEmailAndPassword: (
+    username: string,
+    password: string
+  ) => Promise<string>;
 }
 
 export const useAuth = create<IAuthState>()((set, get) => {
@@ -32,9 +40,43 @@ export const useAuth = create<IAuthState>()((set, get) => {
     return;
   }
 
+  async function registerWithEmailAndPassword(
+    username: string,
+    password: string
+  ) {
+    try {
+      const response = await auth().createUserWithEmailAndPassword(
+        username,
+        password
+      );
+
+      return "success";
+    } catch (error: any) {
+      return error.code as string;
+    }
+  }
+
+  async function signinWithEmailAndPassword(
+    username: string,
+    password: string
+  ) {
+    try {
+      const response = await auth().signInWithEmailAndPassword(
+        username,
+        password
+      );
+
+      return "success";
+    } catch (error: any) {
+      return error.code as string;
+    }
+  }
+
   return {
     user: null,
     onAuthStateChanged,
     onGoogleLinkButtonPress,
+    registerWithEmailAndPassword,
+    signinWithEmailAndPassword,
   };
 });

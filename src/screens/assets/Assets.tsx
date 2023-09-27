@@ -32,19 +32,7 @@ export default function Assets({ navigation }: IAssetsProps) {
           <Text style={textStyles.title}>No Assets</Text>
         </View>
       )}
-      {/* <FloatingActionButton onClick={() => navigation.push("asset-form")} /> */}
-      <FloatingActionButton
-        onClick={async () => {
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: "You've got mail! 📬",
-              body: "Here is the notification body",
-              data: { data: "goes here" },
-            },
-            trigger: null,
-          });
-        }}
-      />
+      <FloatingActionButton onClick={() => navigation.push("asset-form")} />
     </View>
   );
 }
