@@ -7,7 +7,6 @@ import useTheme from "../../theme/useTheme";
 import { AssetCard } from "../../features/assets";
 import { useAssetList } from "../../features/assets/hooks/useAssetList";
 import { RootStackParamsList } from "../../utils/types";
-import * as Notifications from "expo-notifications";
 
 export interface IAssetsProps {
   route: RouteProp<RootStackParamsList, "assets">;

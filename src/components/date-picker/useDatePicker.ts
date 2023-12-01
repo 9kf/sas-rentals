@@ -1,10 +1,9 @@
+import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useEffect, useState } from "react";
 
 interface IUseDatePickerProps {
   defaultDate?: Date;
   onConfirmCallback?: (date: Date) => void;
-  onCloseCallback?: () => void;
-  onCancelCallback?: () => void;
 }
 
 export function useDatePicker(props?: IUseDatePickerProps) {
@@ -17,15 +16,13 @@ export function useDatePicker(props?: IUseDatePickerProps) {
     }
   }, []);
 
-  function onConfirm(date: Date) {
+  function onChange(event: DateTimePickerEvent, date?: Date | undefined) {
     setIsOpen(false);
-    setDate(date);
-    props?.onConfirmCallback?.(date);
-  }
 
-  function onClose() {
-    setIsOpen(false);
-    props?.onCloseCallback?.();
+    if (event.type === "set" && date != undefined) {
+      setDate(date);
+      props?.onConfirmCallback?.(date);
+    }
   }
 
   function toggle(open?: boolean) {
@@ -37,17 +34,10 @@ export function useDatePicker(props?: IUseDatePickerProps) {
     setIsOpen(!open);
   }
 
-  function onCancel() {
-    setIsOpen(false);
-    props?.onCancelCallback?.();
-  }
-
   return {
     open,
     date,
-    onConfirm,
-    onClose,
     toggle,
-    onCancel,
+    onChange,
   };
 }

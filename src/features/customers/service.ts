@@ -1,8 +1,9 @@
 import firestore from "@react-native-firebase/firestore";
 import { TCustomerFormSchemaType } from "./hooks";
+import { Env } from "@env";
 
 export function useCustomerService() {
-  const customerDocument = firestore().collection("Customers");
+  const customerDocument = firestore().collection(Env.CUSTOMERS_FIRESTORE);
 
   async function addCustomer(
     data: TCustomerFormSchemaType,

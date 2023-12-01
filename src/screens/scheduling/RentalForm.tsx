@@ -194,7 +194,7 @@ export default function RentalForm({ route }: IRentalFormProps) {
               </View>
               <View style={{ ...inputStyles.textInput, marginTop: 4 }}>
                 <DatePickerWrapper
-                  date={formStartDate}
+                  value={formStartDate}
                   maximumDate={new Date(endDate.value)}
                   {...startDatePickerProps}
                 />
@@ -208,7 +208,7 @@ export default function RentalForm({ route }: IRentalFormProps) {
               <View style={{ ...inputStyles.textInput, marginTop: 4 }}>
                 <DatePickerWrapper
                   minimumDate={new Date(startDate.value)}
-                  date={formEndDate}
+                  value={formEndDate}
                   {...endDatePickerProps}
                 />
               </View>

@@ -1,14 +1,20 @@
 import { Pressable, TextInput, View } from "react-native";
-import DatePicker, { DatePickerProps } from "react-native-date-picker";
 import format from "date-fns/format";
+import DateTimePicker, {
+  DatePickerOptions,
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 
-interface IDatePickerWrapperProps extends DatePickerProps {
+interface IDatePickerWrapperProps extends DatePickerOptions {
   dateFormat?: string;
   toggle?: (open?: boolean) => void;
+  open: boolean;
+  onChange: (event: DateTimePickerEvent, date?: Date | undefined) => void;
 }
 
 export function DatePickerWrapper({
   dateFormat,
+  open,
   toggle,
   ...datePickerProps
 }: IDatePickerWrapperProps) {
@@ -20,11 +26,11 @@ export function DatePickerWrapper({
         <TextInput
           style={{ zIndex: 1, color: "black" }}
           editable={false}
-          value={format(datePickerProps.date, textInputDateFormat)}
+          value={format(datePickerProps.value, textInputDateFormat)}
         />
       </Pressable>
 
-      <DatePicker modal mode="date" {...datePickerProps} />
+      {open ? <DateTimePicker mode="date" {...datePickerProps} /> : null}
     </View>
   );
 }

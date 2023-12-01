@@ -4,7 +4,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 
 import useTheme from "../../theme/useTheme";
 import { RootStackParamsList } from "../../utils/types";
-import { useModal } from "../../utils/hooks";
 import { useAssetDetails } from "../../features/assets";
 import { IMAGE_PLACEHOLDER } from "../../utils/contstants";
 import { useAssetService } from "../../features/assets";
@@ -34,8 +33,6 @@ export default function AssetDetails({
     monthlyRate,
     yearlyRate,
   } = route.params.assetDetails;
-
-  const { isVisible, onBackdropPress, showModal, toggleModal } = useModal();
 
   const {
     states: { assetDetails, isSubmitting, rentals },
