@@ -22,10 +22,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   runtimeVersion: "1.0.0",
   android: {
-    googleServicesFile: "./google-services.json",
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
   },
   ios: {
-    googleServicesFile: "./GoogleService-Info.plist",
+    googleServicesFile: process.env.GOOGLE_SERVICES_PLIST,
   },
   // .. sentry config and other stuff here
 });
