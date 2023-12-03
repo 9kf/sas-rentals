@@ -6,6 +6,7 @@
     "development": {
       "channel": "development",
       "distribution": "internal",
+      "developmentClient": true,
       "env": {
         "ASSETS_FIRESTORE": "AssetsDev",
         "CUSTOMERS_FIRESTORE": "CustomersDev",
