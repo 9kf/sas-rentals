@@ -1,0 +1,42 @@
+{
+  "cli": {
+    "version": ">= 5.6.0"
+  },
+  "build": {
+    "production": {
+      "channel": "production",
+      "env": {
+        "ASSETS_FIRESTORE": "Assets",
+        "CUSTOMERS_FIRESTORE": "Customers",
+        "RENTAL_SCHEDULE_FIRESTORE": "RentalSchedule"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
+    },
+    "development": {
+      "extends": "production",
+      "channel": "development",
+      "distribution": "internal",
+      "developmentClient": true,
+      "env": {
+        "ASSETS_FIRESTORE": "AssetsDev",
+        "CUSTOMERS_FIRESTORE": "CustomersDev",
+        "RENTAL_SCHEDULE_FIRESTORE": "RentalScheduleDev"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

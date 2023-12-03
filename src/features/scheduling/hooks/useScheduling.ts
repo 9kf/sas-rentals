@@ -11,6 +11,7 @@ import { getDatesInRange } from "../helpers";
 import { IRentalScheduleFirebaseResponse } from "../types";
 import { useRentalSchedulingService } from "../service";
 import { ISchedulingProps } from "../../../screens/scheduling/Scheduling";
+import { useToast } from "../../../components";
 
 interface IMarkedDates {
   [key: string]: {
@@ -20,6 +21,7 @@ interface IMarkedDates {
 
 export function useScheduling({ navigation, route }: ISchedulingProps) {
   const { rentalScheduleDocument } = useRentalSchedulingService();
+  const showToast = useToast((state) => state.showToast);
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -36,43 +38,53 @@ export function useScheduling({ navigation, route }: ISchedulingProps) {
     const rentalsCopy = [];
     setRentals([]);
 
-    const thisMonthRentals = await rentalScheduleDocument
-      .orderBy("startDate")
-      .orderBy("endDate")
-      .startAt(firestore.Timestamp.fromDate(new Date(start)))
-      .endAt(firestore.Timestamp.fromDate(new Date(end)))
-      .get();
+    try {
+      const thisMonthRentals = await rentalScheduleDocument
+        .orderBy("startDate")
+        .orderBy("endDate")
+        .startAt(firestore.Timestamp.fromDate(new Date(start)))
+        .endAt(firestore.Timestamp.fromDate(new Date(end)))
+        .get();
 
-    let markedDatesCopy = {} as IMarkedDates;
+      let markedDatesCopy = {} as IMarkedDates;
 
-    for (const doc of thisMonthRentals.docs) {
-      const typedData = doc.data() as IRentalScheduleFirebaseResponse;
-      if (typedData.startDate.toDate().getMonth() === currentMonth.getMonth())
-        rentalsCopy.push({ ...typedData, id: doc.id });
+      for (const doc of thisMonthRentals.docs) {
+        const typedData = doc.data() as IRentalScheduleFirebaseResponse;
+        if (typedData.startDate.toDate().getMonth() === currentMonth.getMonth())
+          rentalsCopy.push({ ...typedData, id: doc.id });
 
-      const datesInRange = getDatesInRange(
-        typedData.startDate.toDate(),
-        typedData.endDate.toDate()
-      ).map((date) => format(date, "yyyy-MM-dd"));
+        const datesInRange = getDatesInRange(
+          typedData.startDate.toDate(),
+          typedData.endDate.toDate()
+        ).map((date) => format(date, "yyyy-MM-dd"));
 
-      datesInRange.forEach((date, index) => {
-        markedDatesCopy[format(new Date(date), "yyyy-MM-dd")] = {
-          periods: [
-            ...(markedDatesCopy[format(new Date(date), "yyyy-MM-dd")]
-              ?.periods || []),
-            {
-              startingDay: index === 0 ? true : false,
-              endingDay: index === datesInRange.length - 1 ? true : false,
-              color: typedData?.asset?.color ?? "",
-            },
-          ],
-        };
+        datesInRange.forEach((date, index) => {
+          markedDatesCopy[format(new Date(date), "yyyy-MM-dd")] = {
+            periods: [
+              ...(markedDatesCopy[format(new Date(date), "yyyy-MM-dd")]
+                ?.periods || []),
+              {
+                startingDay: index === 0 ? true : false,
+                endingDay: index === datesInRange.length - 1 ? true : false,
+                color: typedData?.asset?.color ?? "",
+              },
+            ],
+          };
+        });
+      }
+
+      setMarkedDates(markedDatesCopy);
+    } catch (error) {
+      console.log(error);
+      showToast({
+        title: "Error",
+        message: "Something went wrong. Please try again.",
+        type: "error",
       });
+    } finally {
+      setRentals(rentalsCopy);
+      setIsRefreshing(false);
     }
-
-    setRentals(rentalsCopy);
-    setMarkedDates(markedDatesCopy);
-    setIsRefreshing(false);
   };
 
   useEffect(() => {

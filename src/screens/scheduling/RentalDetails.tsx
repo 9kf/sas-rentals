@@ -114,15 +114,34 @@ export default function RentalDetails({
         {!isFetchingAsset && (
           <View style={{ flexDirection: "row" }}>
             <View style={styles.imageContainer}>
-              <Image
-                resizeMethod="scale"
-                resizeMode="cover"
-                source={{
-                  uri: asset?.photoUrl || IMAGE_PLACEHOLDER,
-                  height: 100,
-                  width: 180,
-                }}
-              />
+              {asset?.photoUrl ? (
+                <Image
+                  resizeMethod="scale"
+                  resizeMode="cover"
+                  source={{
+                    uri: asset?.photoUrl || IMAGE_PLACEHOLDER,
+                    height: 100,
+                    width: 180,
+                  }}
+                />
+              ) : (
+                <View
+                  style={{
+                    ...containerStyles.centerAll,
+                    height: 100,
+                    width: 180,
+                    backgroundColor: route.params.rentalDetails.asset.color,
+                  }}
+                >
+                  <Text style={{ ...textStyles.buttonText }}>
+                    {route.params.rentalDetails.asset.name
+                      .split(" ")
+                      .map((name) => name[0])
+                      .join()
+                      .replaceAll(",", "")}
+                  </Text>
+                </View>
+              )}
             </View>
             <View style={styles.infoContainer}>
               <Text

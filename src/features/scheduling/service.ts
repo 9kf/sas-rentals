@@ -8,9 +8,12 @@ import {
 } from "../../utils/contstants";
 import { IRentalScheduleFirebaseResponse } from "./types";
 import { useAssetService } from "../assets";
+import { Env } from "@env";
 
 export function useRentalSchedulingService() {
-  const rentalScheduleDocument = firestore().collection("Rental Schedule");
+  const rentalScheduleDocument = firestore().collection(
+    Env.RENTAL_SCHEDULE_FIRESTORE.replace("-", " ")
+  );
   const { customerDocument } = useCustomerService();
   const { assetDocument } = useAssetService();
 

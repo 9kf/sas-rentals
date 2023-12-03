@@ -49,6 +49,8 @@ export function LoginForm({
               style={inputStyles.textInput}
               value={email.value}
               onChangeText={email.onChange}
+              inputMode="email"
+              autoCapitalize="none"
             />
           </View>
           {errors.email && (
@@ -64,6 +66,7 @@ export function LoginForm({
               value={password.value}
               onChangeText={password.onChange}
               secureTextEntry
+              autoCapitalize="none"
             />
           </View>
           {errors.password && (

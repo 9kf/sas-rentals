@@ -20,14 +20,13 @@ export function useNotificationService() {
     targetDate,
     customerName,
   }: TNotificationContentType) {
-    const timeToTarget =
-      new Date(
-        targetDate.getFullYear(),
-        targetDate.getMonth(),
-        targetDate.getDate(),
-        TARGET_HOUR,
-        TARGET_MINUTE
-      ).getTime() - Date.now();
+    const timeToTarget = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate(),
+      TARGET_HOUR,
+      TARGET_MINUTE
+    );
 
     const deliveryNotification = await scheduleNotificationAsync({
       content: {
@@ -37,7 +36,7 @@ export function useNotificationService() {
       },
       identifier: `${assetId}${targetDate.toISOString()}rental`,
       trigger: {
-        seconds: timeToTarget / 1000,
+        date: timeToTarget,
       },
     });
   }
@@ -48,14 +47,13 @@ export function useNotificationService() {
     targetDate,
     customerName,
   }: TNotificationContentType) {
-    const timeToTarget =
-      new Date(
-        targetDate.getFullYear(),
-        targetDate.getMonth(),
-        targetDate.getDate(),
-        TARGET_HOUR,
-        TARGET_MINUTE
-      ).getTime() - Date.now();
+    const timeToTarget = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate(),
+      TARGET_HOUR,
+      TARGET_MINUTE
+    );
     const returnNotification = await scheduleNotificationAsync({
       content: {
         title: `Retrieval notice for ${assetName} today!`,
@@ -64,7 +62,7 @@ export function useNotificationService() {
       },
       identifier: `${assetId}${targetDate.toISOString()}rental`,
       trigger: {
-        seconds: timeToTarget / 1000,
+        date: timeToTarget,
       },
     });
   }
@@ -75,14 +73,13 @@ export function useNotificationService() {
     targetDate,
     customerName,
   }: TNotificationContentType) {
-    const timeToTarget =
-      new Date(
-        targetDate.getFullYear(),
-        targetDate.getMonth(),
-        targetDate.getDate(),
-        TARGET_HOUR,
-        TARGET_MINUTE
-      ).getTime() - Date.now();
+    const timeToTarget = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate(),
+      TARGET_HOUR,
+      TARGET_MINUTE
+    );
     const paymentNotification = await scheduleNotificationAsync({
       content: {
         title: `Payment notice for ${assetName} today!`,
@@ -91,7 +88,7 @@ export function useNotificationService() {
       },
       identifier: `${assetId}${targetDate.toISOString()}payment`,
       trigger: {
-        seconds: timeToTarget / 1000,
+        date: timeToTarget,
       },
     });
   }
@@ -102,14 +99,13 @@ export function useNotificationService() {
     targetDate,
     customerName,
   }: TNotificationContentType) {
-    const timeToTarget =
-      new Date(
-        targetDate.getFullYear(),
-        targetDate.getMonth(),
-        targetDate.getDate(),
-        TARGET_HOUR,
-        TARGET_MINUTE
-      ).getTime() - Date.now();
+    const timeToTarget = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate(),
+      TARGET_HOUR,
+      TARGET_MINUTE
+    );
     const latePaymentNotification = await scheduleNotificationAsync({
       content: {
         title: `Late payment notice for ${assetName}.`,
@@ -118,7 +114,7 @@ export function useNotificationService() {
       },
       identifier: `${assetId}${targetDate.toISOString()}payment`,
       trigger: {
-        seconds: timeToTarget / 1000,
+        date: timeToTarget,
       },
     });
   }

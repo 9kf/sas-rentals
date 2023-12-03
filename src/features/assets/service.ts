@@ -9,9 +9,10 @@ import {
   RATE_INTERVAL_OPTIONS,
 } from "../../utils/contstants";
 import { IAssetFirebaseResponse } from "./types";
+import { Env } from "@env";
 
 export function useAssetService() {
-  const assetDocument = firestore().collection("Assets");
+  const assetDocument = firestore().collection(Env.ASSETS_FIRESTORE);
 
   async function uploadAssetImage(
     imgUri: string,
