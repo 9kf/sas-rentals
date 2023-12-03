@@ -22,7 +22,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   runtimeVersion: "1.0.0",
   android: {
-    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+    package: "com.vagus.sasrentals.android",
+    googleServicesFile: process.env.GOOGLE_SERVICES_BASE64,
   },
   ios: {
     googleServicesFile: process.env.GOOGLE_SERVICES_PLIST,
