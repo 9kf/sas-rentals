@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
-    "android": "EXPO_NO_DOTENV=1 expo run:android",
-    "android:production": "APP_ENV=production expo run:android",
-    "ios": "EXPO_NO_DOTENV=1 expo run:ios",
-    "ios:production": "APP_ENV=production expo run:android",
+    "android:dev": "EXPO_NO_DOTENV=1 expo run:android",
+    "android": "APP_ENV=production expo run:android",
+    "ios:dev": "EXPO_NO_DOTENV=1 expo run:ios",
+    "ios": "APP_ENV=production expo run:android",
     "web": "expo start --web",
     "eas-build-pre-install": "echo $GOOGLE_SERVICES_BASE64 | base64 --decode > ./android/app/google-services.json"
   },

@@ -21,12 +21,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     url: "https://u.expo.dev/8f7ff09f-de8d-43d1-83f1-6c1f79d8e93a",
   },
   runtimeVersion: "1.0.0",
-  android: {
-    package: "com.vagus.sasrentals.android",
-    googleServicesFile: process.env.GOOGLE_SERVICES_BASE64,
-  },
-  ios: {
-    googleServicesFile: process.env.GOOGLE_SERVICES_PLIST,
-  },
+  // android: {
+  //   package: "com.vagus.sasrentals.android",
+  //   googleServicesFile: process.env.GOOGLE_SERVICES_BASE64,
+  // },
+  // ios: {
+  //   googleServicesFile: process.env.GOOGLE_SERVICES_PLIST,
+  // },
   // .. sentry config and other stuff here
 });

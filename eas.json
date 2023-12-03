@@ -3,7 +3,22 @@
     "version": ">= 5.6.0"
   },
   "build": {
+    "production": {
+      "channel": "production",
+      "env": {
+        "ASSETS_FIRESTORE": "Assets",
+        "CUSTOMERS_FIRESTORE": "Customers",
+        "RENTAL_SCHEDULE_FIRESTORE": "RentalSchedule"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
+    },
     "development": {
+      "extends": "production",
       "channel": "development",
       "distribution": "internal",
       "developmentClient": true,
@@ -14,23 +29,11 @@
       },
       "android": {
         "gradleCommand": ":app:assembleDebug"
-      },
-      "ios": {
-        "resourceClass": "m1-medium",
-        "buildConfiguration": "Debug"
       }
     },
     "preview": {
       "distribution": "internal",
       "channel": "preview"
-    },
-    "production": {
-      "channel": "production",
-      "env": {
-        "ASSETS_FIRESTORE": "Assets",
-        "CUSTOMERS_FIRESTORE": "Customers",
-        "RENTAL_SCHEDULE_FIRESTORE": "RentalSchedule"
-      }
     }
   },
   "submit": {
