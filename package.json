@@ -8,6 +8,8 @@
     "ios:dev": "EXPO_NO_DOTENV=1 expo run:ios",
     "ios": "APP_ENV=production expo run:android",
     "web": "expo start --web",
+    "build:android": "eas build --profile production --platform android",
+    "build:android:dev": "eas build --profile development --platform android",
     "eas-build-pre-install": "echo $GOOGLE_SERVICES_BASE64 | base64 --decode > ./android/app/google-services.json"
   },
   "dependencies": {
