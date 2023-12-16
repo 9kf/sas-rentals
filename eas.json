@@ -33,7 +33,13 @@
     },
     "preview": {
       "distribution": "internal",
-      "channel": "preview"
+      "developmentClient": true,
+      "channel": "preview",
+      "env": {
+        "ASSETS_FIRESTORE": "Assets",
+        "CUSTOMERS_FIRESTORE": "Customers",
+        "RENTAL_SCHEDULE_FIRESTORE": "RentalSchedule"
+      }
     }
   },
   "submit": {
